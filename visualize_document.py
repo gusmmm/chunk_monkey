@@ -252,6 +252,28 @@ def generate_content_item(item, base_path="", source_dir=""):
         </div>
         """
     
+    elif content_type == 'table':
+        # Handle complete tables created from grouped table rows
+        formatted_table = format_text_content(content_text)
+        row_count = item.get('row_count', 0)
+        return f"""
+        <div class="content-item table-item">
+            <div class="content-meta">📊 Table ({row_count} rows, Line {line_number})</div>
+            <div class="table-content">{formatted_table}</div>
+        </div>
+        """
+    
+    elif content_type == 'table_row':
+        # For table rows, we'll handle them specially in the section processing
+        # This is a placeholder - table rows should be grouped together
+        formatted_content = format_text_content(content_text)
+        return f"""
+        <div class="content-item table-row-item">
+            <div class="content-meta">📋 Table Row (Line {line_number})</div>
+            <div class="table-row-content">{formatted_content}</div>
+        </div>
+        """
+    
     elif content_type == 'heading':
         level = item.get('level', 2)
         formatted_content = format_text_content(content_text)
@@ -293,6 +315,53 @@ def generate_content_item(item, base_path="", source_dir=""):
         """
 
 
+def group_table_rows(content_items):
+    """Group consecutive table_row items into complete tables."""
+    grouped_items = []
+    current_table_rows = []
+    
+    for item in content_items:
+        if item.get('type') == 'table_row':
+            current_table_rows.append(item)
+        else:
+            # If we have accumulated table rows, create a table
+            if current_table_rows:
+                table_item = create_table_from_rows(current_table_rows)
+                grouped_items.append(table_item)
+                current_table_rows = []
+            
+            # Add the non-table item
+            grouped_items.append(item)
+    
+    # Handle any remaining table rows at the end
+    if current_table_rows:
+        table_item = create_table_from_rows(current_table_rows)
+        grouped_items.append(table_item)
+    
+    return grouped_items
+
+
+def create_table_from_rows(table_rows):
+    """Create a table item from a list of table row items."""
+    if not table_rows:
+        return None
+    
+    # Extract the content from each row
+    table_content = []
+    for row in table_rows:
+        table_content.append(row['content'])
+    
+    # Join all rows with newlines to create a complete markdown table
+    markdown_table = '\n'.join(table_content)
+    
+    return {
+        'type': 'table',
+        'line_number': table_rows[0]['line_number'],
+        'content': markdown_table,
+        'row_count': len(table_rows)
+    }
+
+
 def generate_section(section, base_path="", source_dir="", depth=0):
     """Generate HTML for a document section recursively."""
     title = section.get('title', 'Untitled Section')
@@ -308,8 +377,11 @@ def generate_section(section, base_path="", source_dir="", depth=0):
     # Generate content items
     content_html = ""
     if content:
+        # Group consecutive table rows into tables
+        grouped_content = group_table_rows(content)
+        
         content_items = []
-        for item in content:
+        for item in grouped_content:
             content_items.append(generate_content_item(item, base_path, source_dir))
         content_html = f"""
         <div class="section-content">
@@ -554,6 +626,16 @@ def generate_html_document(data, output_path, input_path):
         .heading-item {{
             background: #e7f3ff;
             border-left-color: #007bff;
+        }}
+        
+        .table-item {{
+            background: #f0f8ff;
+            border-left-color: #8a2be2;
+        }}
+        
+        .table-row-item {{
+            background: #f5f5f5;
+            border-left-color: #999;
         }}
         
         .content-meta {{
