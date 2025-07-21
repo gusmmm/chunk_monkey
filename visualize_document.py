@@ -9,6 +9,8 @@ Supports nested sections, content types, images, and statistics.
 import json
 import argparse
 import os
+import re
+import base64
 from pathlib import Path
 from datetime import datetime
 
@@ -21,6 +23,114 @@ def load_json_document(file_path):
     except Exception as e:
         print(f"Error loading JSON file: {e}")
         return None
+
+
+def convert_markdown_table_to_html(text):
+    """Convert markdown tables to HTML tables."""
+    if not text or '|' not in text:
+        return text
+    
+    lines = text.strip().split('\n')
+    table_lines = []
+    in_table = False
+    
+    for line in lines:
+        line = line.strip()
+        if '|' in line and line.startswith('|') and line.endswith('|'):
+            table_lines.append(line)
+            in_table = True
+        elif in_table and line.startswith('|') and '---' in line:
+            # Skip separator line
+            continue
+        elif in_table and '|' not in line:
+            # End of table
+            break
+        elif not in_table:
+            # Not a table line, return original text
+            return text
+    
+    if len(table_lines) < 2:
+        return text
+    
+    # Convert to HTML table
+    html_table = ['<table class="markdown-table">']
+    
+    # Header row
+    header_cells = [cell.strip() for cell in table_lines[0].split('|')[1:-1]]
+    html_table.append('<thead><tr>')
+    for cell in header_cells:
+        html_table.append(f'<th>{cell}</th>')
+    html_table.append('</tr></thead>')
+    
+    # Data rows
+    html_table.append('<tbody>')
+    for line in table_lines[1:]:
+        if '---' in line:
+            continue
+        cells = [cell.strip() for cell in line.split('|')[1:-1]]
+        html_table.append('<tr>')
+        for cell in cells:
+            html_table.append(f'<td>{cell}</td>')
+        html_table.append('</tr>')
+    html_table.append('</tbody>')
+    html_table.append('</table>')
+    
+    return '\n'.join(html_table)
+
+
+def detect_and_convert_base64_image(text):
+    """Detect base64 encoded images and convert to data URLs."""
+    if not text:
+        return text, False
+    
+    # Pattern for base64 image data
+    base64_pattern = r'data:image/([a-zA-Z]*);base64,([^"\s]+)'
+    
+    if re.search(base64_pattern, text):
+        return text, True
+    
+    # Check if text looks like raw base64 (common patterns)
+    if len(text) > 100 and re.match(r'^[A-Za-z0-9+/=]+$', text.strip()):
+        # Try to detect image type from first few bytes
+        try:
+            decoded = base64.b64decode(text[:20])
+            if decoded.startswith(b'\x89PNG'):
+                return f"data:image/png;base64,{text.strip()}", True
+            elif decoded.startswith(b'\xff\xd8\xff'):
+                return f"data:image/jpeg;base64,{text.strip()}", True
+            elif decoded.startswith(b'GIF8'):
+                return f"data:image/gif;base64,{text.strip()}", True
+        except:
+            pass
+    
+    return text, False
+
+
+def format_text_content(text):
+    """Format text content, handling markdown tables and other formatting."""
+    if not text:
+        return text
+    
+    # Convert markdown tables to HTML
+    formatted_text = convert_markdown_table_to_html(text)
+    
+    # Convert markdown links to HTML
+    formatted_text = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2" target="_blank">\1</a>', formatted_text)
+    
+    # Convert **bold** to HTML
+    formatted_text = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', formatted_text)
+    
+    # Convert *italic* to HTML
+    formatted_text = re.sub(r'\*([^*]+)\*', r'<em>\1</em>', formatted_text)
+    
+    # Convert inline code
+    formatted_text = re.sub(r'`([^`]+)`', r'<code>\1</code>', formatted_text)
+    
+    # Convert line breaks to HTML
+    if '<table' not in formatted_text:
+        formatted_text = formatted_text.replace('\n', '<br>')
+    
+    return formatted_text
 
 
 def generate_stats_card(stats):
@@ -48,9 +158,33 @@ def generate_stats_card(stats):
         </div>
     </div>
     """
+    """Generate HTML for document statistics."""
+    if not stats:
+        return ""
+    
+    stat_items = []
+    for key, value in stats.items():
+        formatted_key = key.replace('_', ' ').title()
+        if isinstance(value, dict):
+            # Handle nested stats like content_types
+            nested_items = []
+            for sub_key, sub_value in value.items():
+                nested_items.append(f"<span class='stat-detail'>{sub_key}: {sub_value}</span>")
+            stat_items.append(f"<div class='stat-item'><strong>{formatted_key}:</strong><br>{'<br>'.join(nested_items)}</div>")
+        else:
+            stat_items.append(f"<div class='stat-item'><strong>{formatted_key}:</strong> {value}</div>")
+    
+    return f"""
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            {''.join(stat_items)}
+        </div>
+    </div>
+    """
 
 
-def generate_content_item(item, base_path=""):
+def generate_content_item(item, base_path="", source_dir=""):
     """Generate HTML for a single content item."""
     content_type = item.get('type', 'text')
     content_text = item.get('content', '')
@@ -61,41 +195,95 @@ def generate_content_item(item, base_path=""):
     if content_type == 'image' or image_path:
         # Try to find the image relative to the JSON file
         img_src = image_path if image_path else content_text
-        if base_path and not os.path.isabs(img_src):
-            img_src = os.path.join(base_path, img_src)
+        
+        # Check if it's a base64 image
+        data_url, is_base64 = detect_and_convert_base64_image(img_src)
+        
+        if is_base64:
+            img_src = data_url
+            caption = "Base64 Encoded Image"
+        else:
+            # Handle relative image paths
+            if not os.path.isabs(img_src):
+                # Try multiple potential paths
+                potential_paths = [
+                    os.path.join(source_dir, img_src),  # Relative to source JSON
+                    os.path.join(base_path, img_src),   # Relative to output
+                    img_src  # Original path
+                ]
+                
+                # Find the first existing path
+                found_path = None
+                for path in potential_paths:
+                    if os.path.exists(path):
+                        found_path = path
+                        break
+                
+                if found_path:
+                    # Make path relative to the HTML output directory
+                    try:
+                        img_src = os.path.relpath(found_path, base_path)
+                    except ValueError:
+                        # If relpath fails (different drives on Windows), use absolute path
+                        img_src = found_path
+            
+            caption = os.path.basename(img_src)
         
         return f"""
         <div class="content-item image-item">
             <div class="content-meta">📷 Image (Line {line_number})</div>
             <div class="image-container">
-                <img src="{img_src}" alt="Document Image" loading="lazy">
-                <div class="image-caption">{os.path.basename(img_src)}</div>
+                <img src="{img_src}" alt="Document Image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="image-error" style="display:none; padding:20px; background:#fee; border:1px solid #fcc; text-align:center; color:#c66;">
+                    ❌ Image could not be loaded<br>
+                    <small>Path: {img_src}</small>
+                </div>
+                <div class="image-caption">{caption}</div>
             </div>
         </div>
         """
     
     elif content_type in ['numbered_list', 'bulleted_list', 'list']:
+        formatted_content = format_text_content(content_text)
         return f"""
         <div class="content-item list-item">
             <div class="content-meta">📝 List Item (Line {line_number})</div>
-            <div class="list-content">{content_text}</div>
+            <div class="list-content">{formatted_content}</div>
         </div>
         """
     
     elif content_type == 'heading':
         level = item.get('level', 2)
+        formatted_content = format_text_content(content_text)
         return f"""
         <div class="content-item heading-item">
             <div class="content-meta">📋 Heading Level {level} (Line {line_number})</div>
-            <h{level} class="content-heading">{content_text}</h{level}>
+            <h{level} class="content-heading">{formatted_content}</h{level}>
         </div>
         """
     
     else:  # text or other types
-        # Truncate very long text for better display
-        display_text = content_text
-        if len(display_text) > 500:
-            display_text = display_text[:500] + "..."
+        # Check if content is a base64 image
+        data_url, is_base64_image = detect_and_convert_base64_image(content_text)
+        
+        if is_base64_image:
+            return f"""
+            <div class="content-item image-item">
+                <div class="content-meta">📷 Base64 Image (Line {line_number})</div>
+                <div class="image-container">
+                    <img src="{data_url}" alt="Base64 Encoded Image" loading="lazy">
+                    <div class="image-caption">Base64 Encoded Image</div>
+                </div>
+            </div>
+            """
+        
+        # Format text content with markdown support
+        formatted_text = format_text_content(content_text)
+        
+        # Truncate very long text for better display (but preserve table formatting)
+        display_text = formatted_text
+        if '<table' not in formatted_text and len(content_text) > 500:
+            display_text = format_text_content(content_text[:500]) + "..."
         
         return f"""
         <div class="content-item text-item">
@@ -105,7 +293,7 @@ def generate_content_item(item, base_path=""):
         """
 
 
-def generate_section(section, base_path="", depth=0):
+def generate_section(section, base_path="", source_dir="", depth=0):
     """Generate HTML for a document section recursively."""
     title = section.get('title', 'Untitled Section')
     level = section.get('level', 2)
@@ -122,7 +310,7 @@ def generate_section(section, base_path="", depth=0):
     if content:
         content_items = []
         for item in content:
-            content_items.append(generate_content_item(item, base_path))
+            content_items.append(generate_content_item(item, base_path, source_dir))
         content_html = f"""
         <div class="section-content">
             {''.join(content_items)}
@@ -148,7 +336,7 @@ def generate_section(section, base_path="", depth=0):
     if subsections:
         subsection_items = []
         for subsection in subsections:
-            subsection_items.append(generate_section(subsection, base_path, depth + 1))
+            subsection_items.append(generate_section(subsection, base_path, source_dir, depth + 1))
         subsections_html = f"""
         <div class="subsections">
             {''.join(subsection_items)}
@@ -168,7 +356,7 @@ def generate_section(section, base_path="", depth=0):
     """
 
 
-def generate_html_document(data, output_path):
+def generate_html_document(data, output_path, input_path):
     """Generate the complete HTML document."""
     doc_info = data.get('document_info', {})
     content = data.get('content', [])
@@ -179,13 +367,14 @@ def generate_html_document(data, output_path):
     structure_type = doc_info.get('structure_type', 'document')
     stats = doc_info.get('statistics', {})
     
-    # Get base path for relative image paths
-    base_path = os.path.dirname(output_path)
+    # Get paths for image resolution
+    output_dir = os.path.dirname(output_path)
+    source_dir = os.path.dirname(input_path)
     
     # Generate main content
     sections_html = []
     for section in content:
-        sections_html.append(generate_section(section, base_path))
+        sections_html.append(generate_section(section, output_dir, source_dir))
     
     # Generate document statistics
     doc_stats_html = generate_stats_card(stats)
@@ -378,6 +567,58 @@ def generate_html_document(data, output_path):
             line-height: 1.7;
         }}
         
+        .text-content code {{
+            background: #f1f3f4;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }}
+        
+        .text-content a {{
+            color: #007bff;
+            text-decoration: none;
+        }}
+        
+        .text-content a:hover {{
+            text-decoration: underline;
+        }}
+        
+        .markdown-table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }}
+        
+        .markdown-table th {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }}
+        
+        .markdown-table td {{
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }}
+        
+        .markdown-table tbody tr:nth-of-type(even) {{
+            background: #f8f9fa;
+        }}
+        
+        .markdown-table tbody tr:hover {{
+            background: #e3f2fd;
+            transition: background-color 0.3s ease;
+        }}
+        
+        .markdown-table tbody tr:last-of-type td {{
+            border-bottom: none;
+        }}
+        
         .list-content {{
             font-weight: 500;
         }}
@@ -395,6 +636,21 @@ def generate_html_document(data, output_path):
             height: auto;
             border-radius: 5px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }}
+        
+        .image-container img:hover {{
+            transform: scale(1.02);
+        }}
+        
+        .image-error {{
+            padding: 20px;
+            background: #fee;
+            border: 1px solid #fcc;
+            border-radius: 5px;
+            text-align: center;
+            color: #c66;
+            margin: 10px 0;
         }}
         
         .image-caption {{
@@ -511,7 +767,7 @@ def main():
     
     # Generate HTML
     print(f"Generating visualization...")
-    html_content = generate_html_document(data, str(output_path))
+    html_content = generate_html_document(data, str(output_path), args.input_file)
     
     # Write output file
     try:
