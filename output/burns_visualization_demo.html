@@ -1,0 +1,2401 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Visualization: burns-with-image-refs.md</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header .subtitle {
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+        
+        .document-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .stat-detail {
+            display: block;
+            margin-left: 10px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .section-meta {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+        
+        .section-stats {
+            padding: 15px 20px;
+            background: #f1f3f4;
+        }
+        
+        .section-stats details summary {
+            cursor: pointer;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .mini-stats .stats-card {
+            margin: 10px 0;
+            padding: 15px;
+        }
+        
+        .section-content {
+            padding: 20px;
+        }
+        
+        .content-item {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .text-item {
+            background: #f8f9fa;
+            border-left-color: #3498db;
+        }
+        
+        .image-item {
+            background: #e8f5e8;
+            border-left-color: #27ae60;
+        }
+        
+        .list-item {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        
+        .heading-item {
+            background: #e7f3ff;
+            border-left-color: #007bff;
+        }
+        
+        .content-meta {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .text-content {
+            line-height: 1.7;
+        }
+        
+        .list-content {
+            font-weight: 500;
+        }
+        
+        .content-heading {
+            color: #2c3e50;
+        }
+        
+        .image-container {
+            text-align: center;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .image-caption {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .depth-0 { margin-left: 0; }
+        .depth-1 { margin-left: 20px; }
+        .depth-2 { margin-left: 40px; }
+        .depth-3 { margin-left: 60px; }
+        .depth-4 { margin-left: 80px; }
+        .depth-5 { margin-left: 100px; }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .depth-1, .depth-2, .depth-3, .depth-4, .depth-5 {
+                margin-left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 Document Visualization</h1>
+            <div class="subtitle">burns-with-image-refs.md</div>
+        </div>
+        
+        <div class="document-info">
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>📁 Source File:</strong><br>
+                    output/burns-with-image-refs.md
+                </div>
+                <div class="info-item">
+                    <strong>📏 Total Lines:</strong><br>
+                    409
+                </div>
+                <div class="info-item">
+                    <strong>🏗️ Structure Type:</strong><br>
+                    Nested Sections
+                </div>
+                <div class="info-item">
+                    <strong>⏰ Generated:</strong><br>
+                    2025-07-21 12:31:51
+                </div>
+            </div>
+            
+            
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Sections:</strong> 33</div><div class='stat-item'><strong>Total Images:</strong> 11</div><div class='stat-item'><strong>Total Text Blocks:</strong> 97</div><div class='stat-item'><strong>Max Depth:</strong> 1</div>
+        </div>
+    </div>
+    
+        </div>
+        
+        <div class="content">
+            
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Initial management of patients with burns and combined injuries for acute care surgeons: What you need to know</h2>
+            <span class="section-meta">Line 1 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 1</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 1</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 1</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 3)</div>
+            <div class="text-content">Barclay T. Stewart, MD, PhD, FACS, Mary A. Hunter, MD, Laura Johnson, MD, Dylan Jason, MD, and Saman Arbabi, MD , Seattle, Washington</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">ABSTRACT:</h2>
+            <span class="section-meta">Line 5 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 10</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 10</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 10</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 7)</div>
+            <div class="text-content">There are nearly 700,000 adults and children with burn injuries who seek care in America each year. While most patients with major burn injuries are cared for at American Burn Association -verified burn centers, many of them present to nonburn centers initially or present with combined burns and other injuries. Despite this, burn surgery is no longer mandated by the Accreditation Council for Graduate Medical Education for general surgery residency and is rarely a meaningful component of surgical...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 9)</div>
+            <div class="text-content">KEY WORDS: Burns; inhalation injury; resuscitation; wound care.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 11)</div>
+            <div class="text-content">T here are nearly 700,000 adults and children with burn injuries who seek care in America each year. 1 Most of those are cared for in the outpatient setting and rarely require attention from general surgeons. 2 About 30,000 patients with burn injuries are admitted to hospitals annually, and half of those have relatively minor injuries not requiring surgical care. The remainder, around 10,000 patients each year, have more extensive injuries requiring emergency procedures, critical care, and/or su...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 13)</div>
+            <div class="text-content">Despite the need for broadly trained general and trauma surgeons, burn surgery is no longer mandated by the Accreditation Council for Graduate Medical Education for general surgery</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 15)</div>
+            <div class="text-content">Submitted: November 14, 2024, Revised: February 14, 2025, Accepted: November 24, 2024, Published online: March 13, 2025.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 17)</div>
+            <div class="text-content">From the Division of Trauma, Burn and Critical Care Surgery (B.T.S., D.J., S.A.), Harborview Medical Center, University of Washington, Seattle, Washington; Division of Acute Care Surgery (M.A.H.), University of Michigan, Ann Arbor, Michigan; Department of Surgery (L.J.), Emory University, Atlanta, Georgia; and Department of Surgery (L.J.), Uniformed Services University of the Health Sciences, Bethesda, Maryland.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 19)</div>
+            <div class="text-content">Address for correspondence: Barclay T. Stewart, MD, PhD, FACS, Division of Trauma, Burn and Critical Care Surgery, Harborview Medical Center, University of Washington, 325 9th A ve, Box 359796, Seattle, W A 98104; email: barclays@uw.edu.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 21)</div>
+            <div class="text-content">DOI: 10.1097/TA.0000000000004559</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 23)</div>
+            <div class="text-content">residency and is rarely a meaningful component of surgical critical care fellowships. 8 However, general surgeons are called to participate in and, occasionally, lead the care of adults and children with burn injuries when local burn expertise is not available, for patients with combined burns and other injuries, when procedures are required, in intensive care units, and during multiple casualty incidents and disasters. Fundamental burn care knowledge and skills deployed during these moments can...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 25)</div>
+            <div class="text-content">This clinical review covers burn-specific aspects of the initial assessment and follow the ABCDE approach (Table 1). Additional details about core burn care principles (e.g., inhalation injury, resuscitation, wound care) and special considerations in combined burns and other injuries are also presented. Lastly, this review is biased toward larger injuries, as there is often less time for review of core principles and inaction has life- and limbthreatening consequences.</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">INITIAL ASSESSMENT AND THE ABCDE APPROACH</h2>
+            <span class="section-meta">Line 27 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 1</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 1</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 1</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 29)</div>
+            <div class="text-content">This section will review the initial assessment of burninjured patients and provide context and next steps for their care beyond the primary and secondary surveys. The ABCDE approach is used to leverage a known framework for care of injured patients (Table 1).</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Airway</h2>
+            <span class="section-meta">Line 31 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 1</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 1</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 1</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 33)</div>
+            <div class="text-content">Airway management of patients with burn injury can be complicated by inhalation injury, head and neck burns, and generalized edema from systemic inflammation and resuscitation. 14</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">TABLE 1. Key Considerations and Pitfalls for General Surgeons Managing Patients With Burn Injuries</h2>
+            <span class="section-meta">Line 35 • Level 2</span>
+        </div>
+        
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Airway and breathing</h2>
+            <span class="section-meta">Line 37 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 6</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 6</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 6</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 39)</div>
+            <div class="text-content">In addition to usual indications, advanced airway management should be performed early in patients with deep head/neck burns and large burn injuries (e.g., &gt;40 -50% TBSA) and those with supraglottic inhalation injury.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 41)</div>
+            <div class="text-content">Many patients with flash burns to the face will not require intubation despite head/neck burns, as the oro- and hypo-pharynx act as excellent heat sinks and prevent supraglottic injury.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 43)</div>
+            <div class="text-content">Patients injured in an enclosed space or with high COHb levels (i.e., &gt;10% COHb) should be treated with 100% oxygen until COHb normalizes.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 45)</div>
+            <div class="text-content">Cyanide toxicity should be suspected when patients injured in an enclosed space are in extremis, shock, and with significant metabolic/lactic acidosis despite resuscitation. Hydroxocobalamin (Cyanokit) should be immediately administered. Patients who receive hydroxocobalamin are at increased risk of AKI and renal replacement therapy, so it should only be given when cyanide toxicity is suspected.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 47)</div>
+            <div class="text-content">Patients injured while smoking on home oxygen generally do not have severe inhalation injury. However, they can experience upper airway injury, and chronic obstructive pulmonary disease exacerbation can ensue.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 49)</div>
+            <div class="text-content">Escharotomy of the chest may be required for patients with deep and near circumferential truncal burns who are difficult to ventilate. This is rarely required in the first 1 to 2 hours after burn injury. Alternative causes for difficulty with ventilation should be sought during the primary and secondary surveys (e.g., mainstem intubation, pneumothorax).</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Circulation</h2>
+            <span class="section-meta">Line 51 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 6</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 6</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 6</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 53)</div>
+            <div class="text-content">Rule out nonburn causes of tachycardia, hypotension, and/or shock while addressing burn shock during primary and secondary surveys.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 55)</div>
+            <div class="text-content">Burn shock is a combination of inflammation-induced capillary leak, vasoplegia, and varying degrees of myocardial dysfunction. Treatment should be focused on goaldirected correction of hypovolemia, vasopressor use as required, and inotropic support if evidence of low ScVO2 or cardiac index.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 57)</div>
+            <div class="text-content">The initial intravenous rate of warm LR for patients with major burns is 500 mL/h for children ≥ 14 years and adults, 250 mL/h for children aged 6 -13 years, and 125 mL/ h for children aged ≤ 5 years.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 59)</div>
+            <div class="text-content">Early coadministration of colloid (e.g., albumin, plasma) with LR may reduce total resuscitation volumes. Plasma may mitigate the endotheliopathy of burns.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 61)</div>
+            <div class="text-content">Runaway resuscitations or resuscitation failures occur when there is oliguria, hypotension, and progressive acidosis despite appropriate fluid adjustments. In addition, patients approaching the Ivy index (i.e., 250 mL/kg administered during the first 24 hours of injury), resuscitation volumes ≥ 6 mL/kg/%TBSA, or hourly total fluid rates ≥ 1500 mL/h should signal runaway resuscitations. Use of colloid, renal replacement therapy, ultra-early excision for full-thickness injuries, or plasma exchange...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 63)</div>
+            <div class="text-content">When combined burn and other injuries, hemorrhagic shock should be addressed while burn shock is treated with plasma-based resuscitation to reduce the risk of coagulopathy.</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Disability</h2>
+            <span class="section-meta">Line 65 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 3</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 3</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 3</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 67)</div>
+            <div class="text-content">Full-thickness burns that are circumferential or near circumferential can have a tourniquet effect and prevent soft-tissue expansion with progressive edema during resuscitation. The result is increased compartment pressures and compartment syndromes. Partial thickness injuries rarely cause compartment syndromes and should not be incised unless there are signs and symptoms of elevated compartment pressures; extremities with partial thickness injury can be elevated to reduce swelling.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 69)</div>
+            <div class="text-content">The goal of escharotomy is to relieve the pressure by incising only the eschar, which is achieved by incision through the dermis and subdermal bands and does not require incision into the subcutaneous fat, fascia, or muscle.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 71)</div>
+            <div class="text-content">Bleeding is common and should be systematically controlled to avoid major blood loss. Note that burn-injured patients during resuscitation generally experience both dilutional and consumptive coagulopathy. Use of electrocautery and sutures to control bleeding is typically required.</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Exposure</h2>
+            <span class="section-meta">Line 73 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 11</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 5</span><br><span class='stat-detail'>numbered_list: 6</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 5</div><div class='stat-item'><strong>List Items:</strong> 6</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 75)</div>
+            <div class="text-content">Complete exposure in the emergency unit allows inspection for other injuries, access for procedures, and estimation of burn depth and size. However, exposure also leads to hypothermia when patients have lost the thermoregulation capabilities of intact skin. Hypothermia in the emergency unit and on admission to the intensive care unit is associated with delayed wound healing, sepsis, MODS, and death. Photos can be quickly taken before the patient is again covered and warmed to allow multiple prov...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 77)</div>
+            <div class="text-content">Passive warming is necessary but insufficient (e.g., warm room, warm blankets, Mylar head covering) for adults and children with ≥ 10 -20%TBSAinjuries. Evaporative cooling should be prevented by coverage with Mylar blankets, plastic gowns, or greasy dressings. Active warming with forced air warming blankets, warmed fluids, warm humidified air/oxygen, radiant heat lamps, and/or intravascular or intra-esophageal warming devices may be required. Invasive devices are used when core temperatures are ...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 79)</div>
+            <div class="text-content">MODS, multiple-organ dysfunction syndrome.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 81)</div>
+            <div class="text-content">In addition to usual indications for advanced airway management (e.g., Glasgow Coma Scale score ≤ 8, injuries that compromise the airway, inability to oxygenate or ventilate), burninjured patients should be evaluated for the following to assess need for advanced airway management 15 :</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 83)</div>
+            <div class="list-content">1. Inhalation injury:</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 84)</div>
+            <div class="list-content">2. Type I</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 85)</div>
+            <div class="list-content">3. Type II smoke inhalation</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 86)</div>
+            <div class="list-content">4. -upper airway (i.e., supraglottic) heat injury -</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 88)</div>
+            <div class="text-content">Type III -systematic toxicity that disrupts oxygen transport or use (e.g., carbon monoxide [CO], hydrogen cyanide [HCN])</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 90)</div>
+            <div class="list-content">2. Deep facial and circumferential or near-circumferential neck burns that limit mouth opening and neck mobility and cause airway edema</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 91)</div>
+            <div class="list-content">3. Extensive burns that will generate systemic inflammation and capillary leak requiring large volume resuscitation (i.e., ≥ 40% total body surface area [TBSA])</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Type I Inhalation Injury</h2>
+            <span class="section-meta">Line 93 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 4</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 4</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 4</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 95)</div>
+            <div class="text-content">The upper airway is an extremely effective heatsink because of its rich capillary network. However, prolonged duration or intense exposure to heat can lead to Type I inhalation injury. The resultant edema of the lips, tongue, hypopharynx, and/or glottic opening can cause progressive airway obstruction, particularly when associated with a large burn and need for resuscitation. Secondary symptoms and signs of upper airway injury include loss of facial hair, soot in the mouth/nose, hoarseness, diff...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 97)</div>
+            <div class="text-content">associated with poor oxygenation or ventilation, or abnormalities on chest imaging. Therefore, a careful history and direct examination are most useful. Flexible laryngoscopy can demonstrate evidence of inhalation injury and edema but only represents a moment in time. Minor symptoms in patients with smaller burns who can describe their symptoms can be observed. Patients with flash burns affecting the face without prolonged exposure to smoke within an enclosed space may have singed facial hair, s...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 99)</div>
+            <div class="text-content">Treatment for significant Type I inhalation injury is timely endotracheal intubation. Use of noninvasive positive pressure ventilation, steroids, racemic epinephrine, heliox, and other temporizing measures is not advised. Deep facial and neck burns can limit the oral aperture and neck mobility and are harbingers for significant airway edema related to Type I inhalation injury and/or venous obstruction of the hypopharynx and neck. When facial and/or airway edema is severe, a surgical airway shoul...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 101)</div>
+            <div class="text-content">The systemic inflammation and large volume resuscitation requirements associated with large burn injuries (e.g., ≥ 40% TBSA) can cause progressive airway obstruction and/or pulmonary edema that result in respiratory failure. In most cases, patients with large burn injuries should be intubated shortly after presentation before it becomes unsafe to do so. Note that induction of anesthesia for endotracheal intubation in patients with burn shock (i.e., hypovolemia, vasoplegia, myocardial dysfunction...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Breathing</h2>
+            <span class="section-meta">Line 103 • Level 2</span>
+        </div>
+        
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Type II Inhalation Injury</h2>
+            <span class="section-meta">Line 105 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 3</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 3</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 3</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 107)</div>
+            <div class="text-content">Prolonged or intense exposure to smoke particles and toxic gases generally within an enclosed space can cause Type II inhalation injury. The result is a neuropeptide-mediated cascade of inflammation, disruption of mucociliary clearance, epithelial sloughing, pulmonary and interstitial edema, and impaired gas exchange. 16 Nitric oxide -induced uncoupling of the hypoxic vasoconstriction reflex, dynamic airway obstruction with air trapping, loss of surfactant because of Type II pneumocyte apoptosis...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 109)</div>
+            <div class="text-content">The initial chest x-ray is generally normal. Imaging after 6 to 12 hours may demonstrate bilateral diffuse airspace disease that can complicate the diagnosis of acute respiratory response syndrome (ARDS). Patients can have significant Type II inhalation injury without Type I or III inhalation injury and vice versa. Therefore, a blood gas with normal carboxyhemoglobin (COHb)</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 111)</div>
+            <div class="text-content">levels should not be used to rule out Type II inhalation injury. Instead, diagnosis relies on history and bronchoscopy with bronchoalveolar lavage. Bronchoscopy should be performed within the first 24 to 48 hours of admission. 18 Bronchoscopists use the Abbreviated Injury Scale to diagnose Type II inhalation injury using signs such as soot deposits, bronchorrhea, mucosal edema, mucosal friability, airway plugging, and necrosis (Fig. 1). Abronchoalveolar lavage sample is sent for gram stain and c...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Type III Inhalation Injury</h2>
+            <span class="section-meta">Line 113 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 10</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 5</span><br><span class='stat-detail'>image: 5</span></div><div class='stat-item'><strong>Image Count:</strong> 5</div><div class='stat-item'><strong>Text Blocks:</strong> 5</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 115)</div>
+            <div class="text-content">Smoke contains many gases, and several of them have described toxidromes. The two most severe and well described are COand HCN toxicity. Carbon monoxide is a colorless, odorless gas emitted predominantly from combustion of fossil fuels and organic material (e.g., wood, cotton, or wool fabrics). Carbon monoxide has an affinity for hemoglobin more than 200 /C2 that of oxygen. Carbon monoxide bound to hemoglobin creates COHb, which shifts the oxyhemoglobin dissociation curve to the left by impairin...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 117)</div>
+            <div class="text-content">The treatment for CO toxicity is administration of 100% oxygen. The half-life of COHb when breathing 21% oxygen is approximately 4 to 5 hours, which can be decreased to approximately 90 minutes with 100% oxygen. Initial %COHb can be estimated using established nomograms. Administration of hyperbaric oxygen will decrease this half-life even further. However, hyperbaric chambers are not practical for critically injured patients. Furthermore, meta-analyses have not found sufficient evidence to supp...</div>
+        </div>
+        
+        <div class="content-item image-item">
+            <div class="content-meta">📷 Image (Line 119)</div>
+            <div class="image-container">
+                <img src="output/burns-with-image-refs_artifacts/image_000000_ca29b3524c4342b127e54bb4da292f3a81ad4fa52201385cd5591a86f43af29b.png" alt="Document Image" loading="lazy">
+                <div class="image-caption">image_000000_ca29b3524c4342b127e54bb4da292f3a81ad4fa52201385cd5591a86f43af29b.png</div>
+            </div>
+        </div>
+        
+        <div class="content-item image-item">
+            <div class="content-meta">📷 Image (Line 121)</div>
+            <div class="image-container">
+                <img src="output/burns-with-image-refs_artifacts/image_000001_c1edcb25acfec4b370a4864e1f83c134e38a2f2be023d3c0bbd1527c1d65f56f.png" alt="Document Image" loading="lazy">
+                <div class="image-caption">image_000001_c1edcb25acfec4b370a4864e1f83c134e38a2f2be023d3c0bbd1527c1d65f56f.png</div>
+            </div>
+        </div>
+        
+        <div class="content-item image-item">
+            <div class="content-meta">📷 Image (Line 123)</div>
+            <div class="image-container">
+                <img src="output/burns-with-image-refs_artifacts/image_000002_378d45555ee3e4efcda2831bf1c43556f5f862338fbe9c3b449b2c17210db8ce.png" alt="Document Image" loading="lazy">
+                <div class="image-caption">image_000002_378d45555ee3e4efcda2831bf1c43556f5f862338fbe9c3b449b2c17210db8ce.png</div>
+            </div>
+        </div>
+        
+        <div class="content-item image-item">
+            <div class="content-meta">📷 Image (Line 125)</div>
+            <div class="image-container">
+                <img src="output/burns-with-image-refs_artifacts/image_000003_d534ec2030ac960fe019890fbee9e8f4cfcc84bec6932019065534ba22c86100.png" alt="Document Image" loading="lazy">
+                <div class="image-caption">image_000003_d534ec2030ac960fe019890fbee9e8f4cfcc84bec6932019065534ba22c86100.png</div>
+            </div>
+        </div>
+        
+        <div class="content-item image-item">
+            <div class="content-meta">📷 Image (Line 127)</div>
+            <div class="image-container">
+                <img src="output/burns-with-image-refs_artifacts/image_000004_c321f063981e76a0d3f286a817ca217dda3276650521d5491b6217ba134ee830.png" alt="Document Image" loading="lazy">
+                <div class="image-caption">image_000004_c321f063981e76a0d3f286a817ca217dda3276650521d5491b6217ba134ee830.png</div>
+            </div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 129)</div>
+            <div class="text-content">Figure 1. Abbreviated Injury Scale for inhalation injury with corresponding bronchoscopy images.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 131)</div>
+            <div class="text-content">Hydrogen cyanide is emitted from combustion of plastics, resins, and synthetic materials, although some natural fibers can release HCN because of their nitrogen content. Hydrogen cyanide binds to the ferric iron moiety of cytochrome oxidase α 3 , inhibiting the mitochondrial cytochrome complex and disrupting oxygen utilization, oxidative phosphorylation, and aerobic metabolism. Hallmarks of HCN toxicity include significant lactic acidemia (i.e., ≥ 8 mmol/L) and hypotension despite resuscitation....</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 133)</div>
+            <div class="text-content">The treatment for HCN toxicity is hydroxocobalamin and should be immediately administered. Hydroxocobalamin binds free cyanide creating cyanocobalamin (vitamin B12), which is readily excreted in the urine. Oxalate, a minor metabolite, is also formed. Hydroxocobalamin should not be used indiscriminately, as it can cause oxalate crystal nephropathy. Patients who receive hydroxocobalamin have higher rates of acute kidney injury (AKI) and need for renal replacement therapy. 23 In addition, patients ...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Deep Torso Burns</h2>
+            <span class="section-meta">Line 135 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 1</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 1</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 1</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 137)</div>
+            <div class="text-content">Full-thickness, leathery , circumferential or near-circumferential eschar to the upper torso can prevent effective ventilation. This can be detected in mechanically ventilated patients by observing very high peak and plateau airway pressures without another cause. This rarely occurs in the minutes after injury and generally takes 2 to 12 hours to manifest as resuscitation occurs. Treatment for torso compartment syndrome is escharotomy incisions through full-thickness eschar that release the ches...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Smoking-Related Home Oxygen Burn Injuries</h2>
+            <span class="section-meta">Line 139 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 6</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 3</span><br><span class='stat-detail'>image: 3</span></div><div class='stat-item'><strong>Image Count:</strong> 3</div><div class='stat-item'><strong>Text Blocks:</strong> 3</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 141)</div>
+            <div class="text-content">Patients with chronic obstructive pulmonary disease or other chronic, severe pulmonary diseases can present with flash burns from smoking while using oxygen. These patients generally have burns on the nose, lips, and/or cheeks, and most do not necessarily have inhalation injury. 24 Intubation is not required</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 143)</div>
+            <div class="text-content">Figure 2. Example escharotomy incisions and technique. 1, Escharotomy should be performed using extensile incisions and extend only across full-thickness burns (i.e., third-degree or deeper burns) while avoiding boney prominences and neurovascular structures beneath the skin. 2, The incisions should only be deep enough to release the eschar, usually only through dermis and subdermal bands. 3, In addition to extensile incisions, transverse or connecting incisions may be required to achieve comple...</div>
+        </div>
+        
+        <div class="content-item image-item">
+            <div class="content-meta">📷 Image (Line 145)</div>
+            <div class="image-container">
+                <img src="output/burns-with-image-refs_artifacts/image_000005_0601841430a1702ce84f561163e0ccf8ce28c8036609844e5d1a146f56ea42df.png" alt="Document Image" loading="lazy">
+                <div class="image-caption">image_000005_0601841430a1702ce84f561163e0ccf8ce28c8036609844e5d1a146f56ea42df.png</div>
+            </div>
+        </div>
+        
+        <div class="content-item image-item">
+            <div class="content-meta">📷 Image (Line 147)</div>
+            <div class="image-container">
+                <img src="output/burns-with-image-refs_artifacts/image_000006_ee46da0a04ff8da5dafd61c2193848f588b90dcc4ac42b731bcaf953fee529e7.png" alt="Document Image" loading="lazy">
+                <div class="image-caption">image_000006_ee46da0a04ff8da5dafd61c2193848f588b90dcc4ac42b731bcaf953fee529e7.png</div>
+            </div>
+        </div>
+        
+        <div class="content-item image-item">
+            <div class="content-meta">📷 Image (Line 149)</div>
+            <div class="image-container">
+                <img src="output/burns-with-image-refs_artifacts/image_000007_875c1cdaedc7ee6477297a65d8353ed0145c7d9e62d29b1d1ec00593ee7e8014.png" alt="Document Image" loading="lazy">
+                <div class="image-caption">image_000007_875c1cdaedc7ee6477297a65d8353ed0145c7d9e62d29b1d1ec00593ee7e8014.png</div>
+            </div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 151)</div>
+            <div class="text-content">for significant lip swelling but may be required for acute on chronic hypoxemia or hypercarbia. chronic obstructive pulmonary disease exacerbation can occur (or was the cause of using oxygen while smoking when that behavior was generally avoided), and routine medical management is appropriate.</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Circulation</h2>
+            <span class="section-meta">Line 153 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 10</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 7</span><br><span class='stat-detail'>list_item: 3</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 7</div><div class='stat-item'><strong>List Items:</strong> 3</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 155)</div>
+            <div class="text-content">motor vehicle crash) or primary survey, with trauma series x-rays, and/or use of extended focused assessment with sonography for trauma (eFAST) scan. If not obvious, considering mechanisms like jump/fall from height to escape fire or blast injury can prevent missed injuries and causes of shock. Considerations with combined burns and other injuries are discussed hereinafter.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 157)</div>
+            <div class="text-content">Burn shock is the result of significant and dysregulated immunoinflammatory activation caused by large burn injury (e.g., ≥ 10 -15% full-thickness burns or ≥ 15 -20% partial and/ or full-thickness burns) and compounded by inhalation injury. Burn shock is a combination of inflammation-induced capillary leak, vasoplegia, and myocardial dysfunction. 25 In addition, fluid losses from partial thickness wounds, endotoxemia from gut bacterial translocation, ischemia-reperfusion injury in marginally per...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 159)</div>
+            <div class="text-content">In the emergency unit, circulation goals are to identify and determine the etiology(ies) of shock, secure sufficient and durable intravenous access, grossly estimate burn depth and size without prolonged exposure that can lead to hypothermia, and initiate resuscitation. Nonburn causes of shock should be systematically ruled out during the history (e.g.,</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 161)</div>
+            <div class="text-content">Two large bore venous catheters placed through unburned skin or sutured in place if placed through burned skin should be obtained. Intra-osseous needles can be used if venous catheters are difficult to secure immediately. Central venous access can generally be delayed until after the primary and secondary surveys. In patients with normal mental status and at low risk of requiring endotracheal intubation, enteral resuscitation with oral rehydration solution or similar fluids is safe and effective...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 163)</div>
+            <div class="text-content">Patients without other causes of shock (e.g., hemorrhagic shock, obstructive shock, neurogenic shock) who have extreme tachycardia and/or hypotension should be given small boluses of warmed lactated Ringer's solution (LR) until end-organ perfusion is improved. Vasopressors and inotropes may be used early but are not usually required in the first few hours of isolated burn shock resuscitation except for patients with very large injuries (e.g., ≥ 40 -60% TBSA). Boluses of LR should be minimized, a...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 165)</div>
+            <div class="text-content">Estimating burn depth and size should be done expeditiously at this stage and without a premium placed on accuracy. Estimation of burn size by inexperienced providers, during the primary survey, and before the initial wound care is routinely inaccurate. The more important distinction is whether the burn is deep and large enough to require resuscitation -a simple ' yes ' or ' no ' is sufficient. To address inaccurate burn size estimation and delays in resuscitation, the American Burn Association ...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 167)</div>
+            <div class="text-content">- 500 mL/h for children 4 years or older and adults,</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 168)</div>
+            <div class="text-content">- 250 mL/h for children aged 6 to 13 years, and</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 169)</div>
+            <div class="text-content">- 125 mL/h for children 5 years or younger.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 171)</div>
+            <div class="text-content">Children 5 years or younger or under 30 kg may also require dextrose maintenance fluids to prevent hypoglycemia. However, dextrose fluids should not be given to children who have stress hyperglycemia. An alternative approach to calculating initial LR rate is the Rule of 10s, developed to simplify fluid calculations for military providers. 35 In this approach, burn size for patients &gt;40 kg is grossly estimated to the nearest 10% TBSA. The initial rate of warmed LR is that %TBSA estimate multip...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Resuscitation Strategy and Endpoints</h2>
+            <span class="section-meta">Line 173 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 1</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 1</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 1</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 175)</div>
+            <div class="text-content">Vital signs and urine output (UOP), the most used marker of end-organ perfusion, should be carefully monitored hourly. The rate of LR should then be adjusted (or not) based on trends in vital signs and UOP (Table 2) using an algorithm. Most algorithms increase or decrease the LR rate by 10% to 20% if UOP is below or above the hourly goal (e.g., 30 mL/h or 0.5 mL/kg/h in an adult, 0.5 -1.0 mL/kg/h in a child), respectively. Additional data can be used to guide resuscitation, particularly when pat...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Use of Colloid</h2>
+            <span class="section-meta">Line 177 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 1</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 1</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 1</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 179)</div>
+            <div class="text-content">Colloid (i.e., albumin, plasma) is used as an adjunct to LR initially or as a rescue during challenging burn resuscitations. 25 The Acute Burn Resuscitation Multicenter Prospective Trial (ABRUPT) evaluated the use of albumin in burn resuscitation. It was an observational study involving more than 20 burn centers. 39 The findings demonstrated that albumin was more commonly used for patients with larger burns, more severe organ dysfunction, and older ages. Despite larger total resuscitation volume...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Runaway or Failed Resuscitations</h2>
+            <span class="section-meta">Line 181 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 9</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 4</span><br><span class='stat-detail'>table_row: 5</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 4</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 5</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 183)</div>
+            <div class="text-content">Runaway resuscitations or resuscitation failures occur when there is oliguria, hypotension, or progressive acidosis despite appropriate fluid adjustments. In addition, patients approaching the Ivy index (i.e., 250 mL/kg administered during the first 24 hours of injury), resuscitation volumes ≥ 6 mL/kg/ %TBSA, or hourly total fluid rates ≥ 1500 mL/h should signal runaway resuscitations. 42 Fluid administration at these rates result in compartment syndromes, inability to oxygenate and</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 185)</div>
+            <div class="text-content">TABLE 2. Resuscitation Strategies During Primary and Secondary Survey, After Burn Size Estimation, and Afterwards</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 187)</div>
+            <div class="text-content">| Resuscitation Phase                                           | Patient Characteristics                                      | Warm LR                                                                                                                                                                                                    | Resuscitation Adjuncts                                                                                                                                                ...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 188)</div>
+            <div class="text-content">|---------------------------------------------------------------|--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 189)</div>
+            <div class="text-content">| Primary and secondary surveys (prior to burn size estimation) | Age ≤ 5 y Age 6 - 13 y Age ≥ 14 y                            | 125 mL/h 250 mL/h 500 mL/h                                                                                                                                                                                 | Blood products and vasopressors as needed for stabilization                                                                                                           ...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 190)</div>
+            <div class="text-content">| Resuscitation                                                 | Thermal or chemical injury Children ≤ 13 y Electrical injury | Goal directed or 2 mL/kg/ %TBSA/24 h Goal directed or 2 mL/kg/ %TBSA/24 h Goal directed or 2 mL/kg/ %TBSA/24 h                                                                                             | Albumin, plasma, vasopressors, inotropes, ultra-early excision, CRRT                                                                                                  ...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 191)</div>
+            <div class="text-content">| Postresuscitation                                             | All patients                                                 | Fluids as needed depending on multiple factors (enteral intake, insensible losses, volume responsiveness, evidence of pulmonary edema, or circulatory overload); diuresis is generally not effective until | Fluids as needed depending on multiple factors (enteral intake, insensible losses, volume responsiveness, evidence of pulmonary edema, or circulatory overload); diure...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 193)</div>
+            <div class="text-content">Goal-directed resuscitation implies adjusting LR and colloid rates every hour based on resuscitation endpoints; 2 to 4 mL/kg/%TBSA is to be administered over 24 hours with the first half given in the first 8 hours and the second half given in the next 16 hours; children &lt;30 kg may require additional dextrose maintenance fluid. CO2, carbon dioxide; CRRT, continuous renal replacement therapy.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 195)</div>
+            <div class="text-content">ventilate, and circulatory overload if not recognized and addressed quickly. Patients at risk of runaway resuscitations are those with very deep and large burn injuries (e.g., ≥ 60%TBSA), severe inhalation injury, delayed resuscitation, and major medical comorbidities (e.g., cirrhosis, pulmonary hypertension). Modifiable risks for runaway resuscitation include prehospital and admission hypothermia, multiple fluid boluses, too high of an initial LR rate, too high of a mean arterial pressure or UO...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Combined Hemorrhagic and Burn Shock</h2>
+            <span class="section-meta">Line 197 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 6</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 2</span><br><span class='stat-detail'>numbered_list: 4</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 2</div><div class='stat-item'><strong>List Items:</strong> 4</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 199)</div>
+            <div class="text-content">Patients with combined hemorrhagic and burn shock should be treated in accordance with damage-control resuscitation (DCR) principles. 44 The goal of DCR is to prevent the consequences of the lethal triad of progressive metabolic acidosis, coagulopathy, and hypothermia from major hemorrhage -all of which are also common in patients with burn injury. The key principles of DCR include the following:</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 201)</div>
+            <div class="list-content">1. permissive hypotension,</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 202)</div>
+            <div class="list-content">2. restriction of crystalloid resuscitation,</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 203)</div>
+            <div class="list-content">3. earlier blood transfusion with whole blood or balanced plasma and platelet to red blood cell transfusion ratios, 45,46 and</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 204)</div>
+            <div class="list-content">4. goal-directed correction of coagulopathy.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 206)</div>
+            <div class="text-content">Although there is little evidence to guide how concomitant hemorrhage-related and burn resuscitation should proceed, the neglect of one for the other is reliably unsuccessful. Theoretically, it would be ideal for some baseline plasma-based burn resuscitation to continue while DCR is being performed. Practically, patients with hemorrhagic shock require all available access lines for whole blood or 1:1:1 transfusion and medications (e.g., tranexamic acid, calcium, muscle relaxant, vasopressor). Th...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Disability</h2>
+            <span class="section-meta">Line 208 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 1</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 1</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 1</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 210)</div>
+            <div class="text-content">Full-thickness burns that are circumferential or near circumferential can have a tourniquet effect and prevent softtissue expansion with progressive edema during resuscitation. The result is increased compartment pressures and compartment syndromes. Partial thickness injuries rarely cause compartment syndromes and should not be incised unless there are signs and symptoms of elevated compartment pressures; extremities with partial thickness injury can be elevated to reduce swelling. The extremiti...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Exposure</h2>
+            <span class="section-meta">Line 212 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 4</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 3</span><br><span class='stat-detail'>image: 1</span></div><div class='stat-item'><strong>Image Count:</strong> 1</div><div class='stat-item'><strong>Text Blocks:</strong> 3</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 214)</div>
+            <div class="text-content">Complete exposure in the emergency unit allows inspection for other injuries, access for procedures, and estimation of burn depth and size. However, exposure also leads to hypothermia when patients have lost the thermoregulation capabilities of intact skin. Hypothermia in the emergency unit and on admission to the intensive care unit is associated with delayed wound</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 216)</div>
+            <div class="text-content">Figure 3. Example algorithm to guide resuscitation for patients with combined burn and other injuries. MAP, mean arterial pressure; ScvO2, central venous oxygen saturation; IV, intravenous; PLR, passive leg raise; CVP, central venous pressure; POCUS, point-of-care ultrasound examination(s); PPV, pulse pressure variation; SVV, stroke volume variation; Echo, echocardiography; PAC, pulmonary artery or Swan-Ganz catheter.</div>
+        </div>
+        
+        <div class="content-item image-item">
+            <div class="content-meta">📷 Image (Line 218)</div>
+            <div class="image-container">
+                <img src="output/burns-with-image-refs_artifacts/image_000008_19da4f514ac52015ffa0868ceb3ba040beab81963e40f3876e640aa4c0555b7c.png" alt="Document Image" loading="lazy">
+                <div class="image-caption">image_000008_19da4f514ac52015ffa0868ceb3ba040beab81963e40f3876e640aa4c0555b7c.png</div>
+            </div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 220)</div>
+            <div class="text-content">healing, sepsis, multiple-organ dysfunction syndrome, and death. 48 Therefore, exposure should be minimized. Photos can be quickly taken before the patient is again covered and warmed to allow multiple providers to see and understand the injury and estimate burn depth and size with less time pressure. Passive warming is necessary but insufficient (e.g., warm room, warm blankets, Mylar head covering) for adults and children with ≥ 10% to 20% TBSA injuries. Evaporative cooling should be prevented ...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">WOUNDCARE</h2>
+            <span class="section-meta">Line 222 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 9</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 4</span><br><span class='stat-detail'>numbered_list: 5</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 4</div><div class='stat-item'><strong>List Items:</strong> 5</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 224)</div>
+            <div class="text-content">Wound care should only be performed once the primary and secondary surveys are complete and life-threatening injuries or conditions have been addressed. Furthermore, wound care should be delayed until resuscitation is proceeding well (i.e., vital signs, blood gases, and UOP goals are being met) and normothermia is achieved.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 226)</div>
+            <div class="text-content">It is helpful to recall skin anatomy when discussing wound care. The skin's outer layer, the epidermis, acts as a mechanical, microbial, and fluid barrier to the outside world. The skin's strength and functional layer is the dermis, which anchors skin to the tissues beneath and harbors sweat and oil glands, hair follicles, nerve endings, and rich capillary plexuses for thermoregulation. It is the degree of injury within the dermis that determines the burn's ability to heal in a timely manner and...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 228)</div>
+            <div class="text-content">The following steps can be taken for wound care:</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 230)</div>
+            <div class="list-content">1. Pain and anxiety management -Provide sufficient multimodal pain medications, anxiolytics (e.g., benzodiazepines), and/or ketamine to ensure comfortable and atraumatic wound care. Extremely painful and traumatic wound care experiences corrode into trust between patients and providers and lead to hyperalgesia, allodynia, acute stress symptoms, and increased risks of chronic pain and posttraumatic stress syndrome.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 231)</div>
+            <div class="list-content">2. Cleaning and debridement -Unscented soap and clean water are sufficient for cleaning. Antiseptics are generally toxic to fibroblasts and epithelial cells. All debris and loose devitalized skin and tissues should be removed using a course cloth or forceps and scissors. Note that chemical injuries should be swept free of powders and copiously irrigated until skin pH testing is normal. Skin pH testing should be repeated 1 hour later, as the chemical can leach out of the wound and cause further injury.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 232)</div>
+            <div class="list-content">3. Topical antimicrobial agent -Burn wounds need not be sterile, but heavy colonization and infection should be prevented. Partial thickness wounds can be treated with antimicrobial ointment or silver-impregnated dressings. Full-thickness eschar is often managed with 1% silver sulfadiazine. Wounds with extensive fat, fascia, or muscle can be soaked in antimicrobial, Dakin's, or acidic solutions (e.g., hypochlorous acid, acetic acid). Multiple other topical agents can be used as indicated.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 233)</div>
+            <div class="list-content">4. Dressings -The outer dressing should protect the wound from the outside environment, prevent the wound from desiccating, and absorb drainage. These range from nonstick petroleum gauze wrapped with outer dressings (e.g., cotton gauze) or surgical netting changed daily to silver-impregnated sponges with outer dressings changed once every 3 to 7 days. Dressings should not impede movement and complement strategies to minimize edema.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 234)</div>
+            <div class="list-content">5. Compression -Edema limits oxygen tension in wounds, is painful, limits function, and delays healing. Use of elastic bandages or negative pressure wound therapy reduces edema. Elastic bandages should be changed daily to ensure proper tension and reduce the risk of pressure injury.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 236)</div>
+            <div class="text-content">Early surgical burn excision and reconstruction are beyond the scope of this review. 49,50 However, both wound care and debridement can be achieved with a proteolytic enzyme, anacaulase-bcdb, when burn surgical expertise is not readily available. Enzymatic debridement can serve as a triage tool and adjunct to routine wound assessment for indeterminant partial thickness wounds. 51 The challenge of accurately assessing the potential for wounds to heal within 2 to 3 weeks with sufficiently low risk...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">SPECIAL CONSIDERATIONS</h2>
+            <span class="section-meta">Line 238 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 1</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 1</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 1</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 240)</div>
+            <div class="text-content">Discussions regarding surgical and critical care considerations, pain and anxiety management strategies, nutrition supplementation, burn therapy, and psychosocial support are beyond the scope of this review. 53 -55 However, brief discussions regarding combined burn and other injuries are important, as these patients commonly require the expertise of a general surgeon versed in burn care.</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Combined Burn and Other Injuries</h2>
+            <span class="section-meta">Line 242 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 6</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 6</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 6</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 244)</div>
+            <div class="text-content">Although combined burn and other injuries are relatively uncommon (&lt;5% of injuries in civilian burn centers, 5 -20% of injuries in conflict and humanitarian settings), they are generally complex, have competing care needs, and require alignment of frequently segregated resources and services. 6,7,56,57 Their relative rarity means that few health care systems and clinical teams have cared for enough patients with combined injuries to be facile in balancing competing care priorities. General su...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 246)</div>
+            <div class="text-content">Most patients with combined injuries have both small burn sizes (i.e., &lt;20% TBSA) and low Injury Severity Scores (ISSs) (e.g., isolated extremity fracture). 6,7 The nonburn injuries associated with combined trauma are generally musculoskeletal, intracranial, intrathoracic, intra-abdominal, or multisystem injuries. 58 Analysis of the National Trauma Data Bank reported that patients with combined injuries are more likely to have longer intensive care unit stays (mean of 20 days vs. 14 days for ...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 248)</div>
+            <div class="text-content">escape structure fire, obvious penetrating injury, exposure to high-order explosives), such patients can be cared for with focus on their burn injury.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 250)</div>
+            <div class="text-content">Patients with combined injury have mortality rates two to six times higher for patients with combined injuries compared with those with isolated injuries even when stratified by overall injury severity. 57 Even patients with combined trauma and minor burns (i.e., &lt;20% TBSA) have nearly a five times increased risk of mortality compared with those with minor burns alone. 57</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 252)</div>
+            <div class="text-content">Despite advances in both burn and trauma care over the last two decades, mortality has not decreased significantly for this unique population. A recent analysis of the National Trauma Data Bank by Grigorian et al. 56 included 6,539,211 trauma patients, 152,686 burn patients, and 33,813 combined injury patients. Several findings were important, including the observation that the impact of burn injuries on mortality of patients with minor trauma (i.e., ISS &lt;16) was lower in 2007 to 2015 compare...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 254)</div>
+            <div class="text-content">The most common nonburn injuries among patients with burns include skeletal, intracranial, chest and intrathoracic injuries, and multisystem injuries. Guidelines for each of these injuries were created to optimize their specific management strategies and do not necessarily address the needs of other injuries. Each of these injuries poses unique competing care requirements and deserve special consideration.</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Skeletal Injuries</h2>
+            <span class="section-meta">Line 256 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 11</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 5</span><br><span class='stat-detail'>numbered_list: 6</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 5</div><div class='stat-item'><strong>List Items:</strong> 6</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 258)</div>
+            <div class="text-content">There is little evidence about the coincidence and management of collocated burn and skeletal injuries. Bradshaw et al. 59 examined 22 patients with collocated burns and fractures. Their cohort included 17 operative patients (11 with internal fixation,</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 260)</div>
+            <div class="text-content">2 with external fixation, and 4 with temporary external fixation converted to internal fixation after several days) and 5 nonoperative patients. 59 The authors reported nine complications of which five were infections, particularly when stable wound closure could not be rapidly achieved because of a collocated burn injury. Bui et al. 58 described 40 patients with combined burns and fractures. Twenty-one patients had collocated burns and fractures. Patients with collocated injuries had greater in...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 262)</div>
+            <div class="text-content">Given the lack of clear guidance on the appropriate way to manage patients with combined burns and fractures, adherence to damage-control orthopedic principles is generally recommended. 60,61 Decisions around the timing and staging of surgical burn care and fracture management should be based on several considerations:</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 264)</div>
+            <div class="list-content">1. Physiological condition of the patient;</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 265)</div>
+            <div class="list-content">2. Stability of the fracture and need for its rapid reduction and immobilization (e.g., associated with pulseless extremity, open fractures, highly comminuted fractures);</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 266)</div>
+            <div class="list-content">3. Access needed for burn wound evaluation and management;</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 267)</div>
+            <div class="list-content">4. Burn wound depth and need for excision and reconstruction in single or multiple stages;</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 268)</div>
+            <div class="list-content">5. Risk of functional recovery deficits with delays in care, immobilization, and weight bearing restrictions; and</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 269)</div>
+            <div class="list-content">6. Opportunities to use skin and soft tissue from a limb that might otherwise undergo delayed or staged amputation for reconstruction of another area of the body (e.g., use of skin or flaps from one leg to cover complex wounds on the other).</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 271)</div>
+            <div class="text-content">Surgical teams can cooperate to stabilize the fracture and then excise and reconstruct deep burns. Use of skin substitutes (e.g., allograft, dermal matrices) can reduce the microbial burden of excised wounds that cannot be immediately autografted and may reduce the risk of pin site infections when external fixators are used. 62 Regardless, meticulous pin site care should be performed and aligned with the burn wound care of the affected extremity. External fixation can be converted to internal fi...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 273)</div>
+            <div class="text-content">Splints and casts should be applied anticipating edema, wound evaluation, and care needs. Use of bivalved casts, frequent split or cast changes, and/or prefabricated removable orthoses can maximize limb stability and ease of daily care. Given the risks of joint contracture related to the shortening of burn wound/graft/scar and mal- or nonunion from overzealous mechanical stresses, thoughtful discussions with the burn, orthopedic, and therapy teams should occur to minimize weight bearing and mobi...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Intracranial Injuries</h2>
+            <span class="section-meta">Line 275 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 4</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 4</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 4</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 277)</div>
+            <div class="text-content">Mortality rates after combined burn and traumatic brain injury (TBI) are particularly high. The odds of death are three times higher when patients have combined burn and TBI compared with one or the other alone. 6 Multiple aspects of burn</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 279)</div>
+            <div class="text-content">injury and resuscitation compete with evidence-based best practices for patients with TBI. As examples, hyponatremic fluids (e.g., LR) are administered based on UOP , colloids like albumin are recommended to decrease total 24-hour fluid requirements, moderate hyponatremia is permitted, and patients require numerous major operations and anesthetics within the weeks after injury generally in the absence of neuroanesthesia.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 281)</div>
+            <div class="text-content">Hyponatremia is common during and after burn resuscitation and related to multiple factors, including use of hypotonic fluids and injury-related syndrome of inappropriate antidiuretic hormone. 63 In addition, several studies have demonstrated that inflammation from burn and inhalation injuries disrupts the blood-brain barrier and causes capillary dilation and even microvascular hemorrhage that can exacerbate cerebral edema and TBI. 64 One study serially imaged the brain during burn resuscitation...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 283)</div>
+            <div class="text-content">Best practices for the care of patients with TBI include a fluid conservative approach to avoid cerebral edema, avoidance of hyponatremia, consideration of invasive neuromonitoring and cerebrospinal fluid drainage, strict control of mean arterial and cerebral perfusion pressure, and avoidance of albumin (or preference for plasma) administration (Table 3). Prophylactic antibiotics, although controversial, should be considered when invasive neuromonitoring devices are placed through burned scalp f...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Chest and Intrathoracic Injuries</h2>
+            <span class="section-meta">Line 285 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 2</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 2</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 2</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 287)</div>
+            <div class="text-content">Rib fractures, hemopneumothoraxes, pulmonary contusions, and traumatic primary pulmonary thrombosis are common among critically injured patients and complicate burn care. Although there is little evidence regarding these combined injury patterns, they are associated with more ventilator days, longer intensive care requirements, increase risk of complications (e.g., ARDS, multiple organ dysfunction), and greater risk of mortality, particularly when combined with inhalation injury. 18,68 There is ...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 289)</div>
+            <div class="text-content">The use of early tracheostomy for patients with isolated burn injuries is controversial and not informed by consistent evidence. 69,70 For patients with major burn injuries, some have advocated for tracheostomy to prevent airway complications related to prolonged orotracheal intubation (e.g., subglottic stenosis) and/or numerous reintubations for operations and to more safely facilitate comfortable wound cares. When patients have combined injuries, early tracheostomy (i.e., when safe and intubat...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">Intra-abdominal Injuries</h2>
+            <span class="section-meta">Line 291 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 7</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 2</span><br><span class='stat-detail'>table_row: 5</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 2</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 5</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 293)</div>
+            <div class="text-content">Diagnosis of intra-abdominal injury is complicated by burn injury, particularly when deep burns over the abdomen are present. Abdominal burns can obscure careful examination and eFASTexamination, elevating the role of diagnostic peritoneal aspiration and lavage and/or computed tomography. Patients who have received resuscitation will develop ascites that may complicated interpretation of intra-abdominal fluid on imaging (e.g., free fluid in the pelvis in patients with blunt abdominal injury and ...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 295)</div>
+            <div class="text-content">TABLE 3. Strategies to Manage Patients With Combined Burn and TBI</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 297)</div>
+            <div class="text-content">| Strategy                             | Example Approach                                                                                                                                                                                                                                                                                                                                                                                                                                                           ...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 298)</div>
+            <div class="text-content">|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 299)</div>
+            <div class="text-content">| Monitoring                           | Use multiple measures of end-organ perfusion to optimize resuscitation and strategies to avoid both shock and overresuscitation (e.g., every 30-minute fluid rate adjustment, use of vasopressors to ensure adequate mean arterial pressure and cerebral perfusion pressure) Include hourly neurological examinations if not muscle relaxed or more advanced monitoring if examination is not possible (e.g., intra- cranial pressure and brain tissue oxygenation [PbtO 2 ...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 300)</div>
+            <div class="text-content">| Volume and sodium management         | Avoid hyponatremia by serially assessing serum sodium levels and supplementing burn resuscitation with hypertonic saline to achieve normonatremia (not hypernatremia) Minimize albumin use and consider plasma-based resuscitation instead Consider early use of renal replacement therapy when AKI and oliguria is progressive rather than erring on overresuscitation                                                                                                    ...</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 301)</div>
+            <div class="text-content">| Prevention of secondary brain injury | Serially assess blood gases and coagulation panels to ensure normoxia, normocapnia, and mitigate thrombocytopenia or coagulopathy Use neuroprotective anesthesia strategies and avoid secondary brain injury during operations Selective use of external ventricular drains (if evidence of acute hydrocephalus) and decompressive craniectomy after multidisciplinary consultation (e.g., burn, trauma and critical care, neurosurgery, palliative care, and rehabilitatio...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">TABLE 4. Thoracic Problems and Example Approaches to Manage Patients With Combined Burn and Chest Injuries</h2>
+            <span class="section-meta">Line 303 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 10</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>table_row: 8</span><br><span class='stat-detail'>text: 2</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 2</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 8</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 305)</div>
+            <div class="text-content">| Thoracic Problem                       | Example Approaches                                                                                                                                                                                                                                                                                       |</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 306)</div>
+            <div class="text-content">|----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 307)</div>
+            <div class="text-content">| Inhalation injury                      | Early bronchoscopic diagnosis and bronchoalveolar lavage Administer locally appropriate antibiotics if initial bronchoalveolar lavage returns with bacterial isolate If intubated, administer inhaled heparin, N -acetylcysteine, and albuterol until sputum clear and thin or 5 days                    |</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 308)</div>
+            <div class="text-content">| ARDS                                   | Maintain vigilance and transition to lung protective ventilation strategy when appropriate Follow evidence-based practices for prone positioning and ensuring ventilator synchrony Consider extracorporeal life support, particularly if combined with TBI, to prevent injurious intrathoracic pressures |</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 309)</div>
+            <div class="text-content">| Rib fractures                          | Ensure adequate pain control, including use of regional analgesia to reduce risk of opioid toxicity Support pulmonary hygiene Consider early fixation for patients with flail chest, severe chest deformity, or multiple bicortically displaced fractures                                                |</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 310)</div>
+            <div class="text-content">| Hemopneumothorax                       | Prompt and complete pleural drainage Ensure excellent perithoracostomy tube care to prevent infection Remove thoracostomy tube(s) as soon as possible to prevent empyema                                                                                                                                 |</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 311)</div>
+            <div class="text-content">| Pulmonary contusion                    | Deresuscitate when able Supportive care and vigilance regarding ARDS                                                                                                                                                                                                                                     |</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 312)</div>
+            <div class="text-content">| Traumatic primary pulmonary thrombosis | Weigh risks and benefits of anticoagulation Consider interval imaging to assess dissolution or progression                                                                                                                                                                                               |</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 314)</div>
+            <div class="text-content">mandatory to avoid delay in decompressive laparotomy. 72 Additional adjuncts include use of the venous excess ultrasound score when burns do not overly examine windows. 73</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 316)</div>
+            <div class="text-content">Management of the open abdomen after damage-control surgery in the setting of abdominal burns is also a challenge. Burns on the abdomen usually prevent the use of conventional negative pressure wound dressings. Use of a Bogota bag or silastic sheet sewn to the fascia edges or eschar may be required (Fig. 4). The only sizable description of open abdomen management among patients with major burn injuries reported that the fascia was able to be closed in only 55% of patients. 74 Of those who achiev...</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">CONCLUSION</h2>
+            <span class="section-meta">Line 318 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 4</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 2</span><br><span class='stat-detail'>image: 2</span></div><div class='stat-item'><strong>Image Count:</strong> 2</div><div class='stat-item'><strong>Text Blocks:</strong> 2</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 320)</div>
+            <div class="text-content">General surgeons play key roles in supporting the care of injured patients and will invariably be called upon to lead the care of patients with combined burns and other injuries. A familiarity with the initial assessment and treatment of burn-injured patients and awareness of important considerations when caring for those with combined injuries will prevent complications and save lives. Once stabilized, burn centers can be leveraged to support additional care and transfer recommendations.</div>
+        </div>
+        
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 322)</div>
+            <div class="text-content">Figure 4. Managementoftheopenabdomenwithabdominalburns.A,Conventional negative-pressure strategies to manage the open abdomen are generally not successful when used on an abdomen with abdominal burns, no skin, or skin substitutes. B, A Bogotá bag (e.g., silastic sheet, 3 L irrigation bag) sewn to the fascia, skin, or eschar can be effective.</div>
+        </div>
+        
+        <div class="content-item image-item">
+            <div class="content-meta">📷 Image (Line 324)</div>
+            <div class="image-container">
+                <img src="output/burns-with-image-refs_artifacts/image_000009_9b1da0f9bbf5f256c0185d0d553815d73a823c3033f6faad3e4c84270367bb52.png" alt="Document Image" loading="lazy">
+                <div class="image-caption">image_000009_9b1da0f9bbf5f256c0185d0d553815d73a823c3033f6faad3e4c84270367bb52.png</div>
+            </div>
+        </div>
+        
+        <div class="content-item image-item">
+            <div class="content-meta">📷 Image (Line 326)</div>
+            <div class="image-container">
+                <img src="output/burns-with-image-refs_artifacts/image_000010_cf3a803387995c4e34c7727a005f67ef250d48ba1e8794abe978f6fc151de88c.png" alt="Document Image" loading="lazy">
+                <div class="image-caption">image_000010_cf3a803387995c4e34c7727a005f67ef250d48ba1e8794abe978f6fc151de88c.png</div>
+            </div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">DISCLOSURE</h2>
+            <span class="section-meta">Line 328 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 1</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>text: 1</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 1</div><div class='stat-item'><strong>List Items:</strong> 0</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line 330)</div>
+            <div class="text-content">Conflicts of Interest: Author Disclosure forms have been supplied and are provided as Supplemental Digital Content (http://links.lww.com/TA/ E334).</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+    <div class="section depth-0">
+        <div class="section-header">
+            <h2 class="section-title">REFERENCES</h2>
+            <span class="section-meta">Line 332 • Level 2</span>
+        </div>
+        
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> 75</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>numbered_list: 75</span></div><div class='stat-item'><strong>Image Count:</strong> 0</div><div class='stat-item'><strong>Text Blocks:</strong> 0</div><div class='stat-item'><strong>List Items:</strong> 75</div><div class='stat-item'><strong>Table Rows:</strong> 0</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    
+                </div>
+            </details>
+        </div>
+        
+        
+        <div class="section-content">
+            
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 334)</div>
+            <div class="list-content">1. Ivanko A, Garbuzov AE, Schoen JE, Kearns R, Phillips B, Murata E, et al. The burden of burns: an analysis of public health measures. J Burn Care Res . 2024;45(5):1095 -1097.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 335)</div>
+            <div class="list-content">2. Agoubi LL, Clark NM, Gibbs S, Stewart BT, DeGrauw XG, Vavilala MS, et al. Implementation evaluation of tiered tele-triage pathways for burn center consultations and transfers. J Trauma Acute Care Surg . 2024;96(3):409 -417.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 336)</div>
+            <div class="list-content">3. Galicia KE, Mehta A, Riviello R, Nitzschke S, Bamer A, Gibran NS, et al. The impact of distance to treatment center on long-term outcomes of burn patients. J Burn Care Res . 2023;44(3):624 -663.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 337)</div>
+            <div class="list-content">4. Kahn SA. Regional disparities in burn injury reporting: pearls from the National Burn Repository. J Burn Care Res . 2018;39(6):887 -888.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 338)</div>
+            <div class="list-content">5. Klein MB, Kramer CB, Nelson J, Rivara FP , Gibran NS, Concannon T. Geographic access to burn center hospitals. JAMA . 2009;302(16):1774 -1781.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 339)</div>
+            <div class="list-content">6. Martin R, Taylor S, Palmieri TL. Mortality following combined burn and traumatic brain injuries: an analysis of the National Trauma Data Bank of the American College of Surgeons. Burns . 2020;46(6):1289 -1296.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 340)</div>
+            <div class="list-content">7. Santaniello JM, Luchette FA, Esposito TJ, Gunawan H, Reed RL, Davis KA, et al. Ten year experience of burn, trauma, and combined burn/trauma injuries comparing outcomes. J Trauma . 2004;57(4):696 -700.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 341)</div>
+            <div class="list-content">8. ACGMEProgramRequirements for Graduate Medical Education in General Surgery, IV .C.8.b.(3) (2023). A vailable at: https://www.acgme.org/globalassets/ pfassets/programrequirements/440\_generalsurgery\_2023.pdf. Accessed February 24, 2025.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 342)</div>
+            <div class="list-content">9. Abouzeid CA, Wolfe AE, Ni P , Carrougher GJ, Gibran NS, Hammond FM, et al. Are burns a chronic condition? Examining patient reported outcomes up to 20 years after burn injury -a Burn Model System National Database investigation. J Trauma Acute Care Surg . 2022;92(6):1066 -1074.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 343)</div>
+            <div class="list-content">10. Carrougher GJ, McMullen K, Amtmann D, Wolfe AE, Tenney D, Schneider JC, et al. ' Living well ' after burn injury: using case reports to illustrate significant contributions from the burn model system research program. J Burn Care Res . 2021;42(3):398 -407.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 344)</div>
+            <div class="list-content">11. Deeter L, Seaton M, Carrougher GJ, McMullen K, Mandell SP , Amtmann D, et al. Hospital-acquired complications alter quality of life in adult burn survivors: report from a burn model system. Burns . 2019;45(1):42 -47.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 345)</div>
+            <div class="list-content">12. Stewart BT, Carrougher GJ, Curtis E, Schneider JC, Ryan CM, Amtmann D, et al. Mortality prognostication scores do not predict long-term, healthrelated quality of life after burn: a burn model system national database study. Burns . 2020;47(1):42 -51.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 346)</div>
+            <div class="list-content">13. Legemate CM, Spronk I, Mokkink LB, Middelkoop E, Polinder S, van Baar ME, et al. Evaluation of measurement properties of health-related quality of life instruments for burns: a systematic review. J Trauma Acute Care Surg . 2020;88(4):555 -571.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 347)</div>
+            <div class="list-content">14. Galeiras R, Seoane-Quiroga L, Pértega-Díaz S. Prevalence and prognostic impact of inhalation injury among burn patients: a systematic review and meta-analysis. J Trauma Acute Care Surg . 2020;88(2):330 -344.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 348)</div>
+            <div class="list-content">15. Badulak JH, Schurr M, Sauaia A, Ivashchenko A, Peltz E. Defining the criteria for intubation of the patient with thermal burns. Burns . 2018;44(3): 531 -538.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 349)</div>
+            <div class="list-content">16. Jeschke MG, van Baar ME, Choudhry MA, Chung KK, Gibran NS, Logsetty S. Burn injury. Nat Rev Dis Primers . 2020;6(1):11.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 350)</div>
+            <div class="list-content">17. Herndon DN. Total Burn Care . Fifth ed. Amsterdam, Netherlands: Elsevier; 2018.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 351)</div>
+            <div class="list-content">18. Coston TD, Gaskins D, Bailey A, Minus E, Arbabi S, West TE, et al. Severity of inhalation injury and risk of nosocomial pneumonia: a retrospective cohort study. Chest . 2024;166(6):1319 -1328.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 352)</div>
+            <div class="list-content">19. Witt CE, Stewart BT, Rivara FP , Mandell SP , Gibran NS, Pham TN, et al. Inpatient and postdischarge outcomes following inhalation injury among critically injured burn patients. J Burn Care Res . 2021;42(6):1168 -1175.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 353)</div>
+            <div class="list-content">20. McGinn KA, Weigartz K, Lintner A, Scalese MJ, Kahn SA. Nebulized heparin with N -acetylcysteine and albuterol reduces duration of mechanical ventilation in patients with inhalation injury. J Pharm Pract . 2019;32(2): 163 -166.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 354)</div>
+            <div class="list-content">21. Dries DJ, Perry JF , Tawfik PN. A rationale for safe ventilation with inhalation injury: an editorial review. J Burn Care Res . 2022;irac061.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 355)</div>
+            <div class="list-content">22. Buckley NA, Juurlink DN, Isbister G, Bennett MH, Lavonas EJ. Hyperbaric oxygen for carbon monoxide poisoning. The Cochrane Database of Sys Rev . 2011;2011(4):CD002041.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 356)</div>
+            <div class="list-content">23. Depret F , Hoffmann C, Daoud L, Thieffry C, Monplaisir L, Creveaux J, et al. Association between hydroxocobalamin administration and acute kidney injury after smoke inhalation: a multicenter retrospective study. Crit Care . 2019;23(1):421.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 357)</div>
+            <div class="list-content">24. Carlos WG, Baker MS, McPherson KA, Bosslet GT, Sood R, Torke AM. Smoking-related home oxygen burn injuries: continued cause for alarm. Respiration . 2016;91(2):151 -155.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 358)</div>
+            <div class="list-content">25. Tejiram S, Tranchina SP , Travis TE, Shupp JW . The first 24 hours: burn shock resuscitation and early complications. Surg Clin North Am . 2023; 103(3):403 -413.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 359)</div>
+            <div class="list-content">26. Cancio LC, Salinas J, Kramer GC. Protocolized resuscitation of burn patients. Crit Care Clin . 2016;32(4):599 -610.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 360)</div>
+            <div class="list-content">27. Kramer GC, Michell MW, Oliveira H, Brown TL, Herndon D, Baker RD, et al. Oral and enteral resuscitation of burn shock the historical record and implications for mass casualty care. Eplasty . 2010;10:e56.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 361)</div>
+            <div class="list-content">28. Michell MW, Oliveira HM, Kinsky MP , Vaid SU, Herndon DN, Kramer GC. Enteral resuscitation of burn shock using World Health Organization oral rehydration solution: a potential solution for mass casualty care. J Burn Care Res . 2006;27(6):819 -825.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 362)</div>
+            <div class="list-content">29. Bao C, Hu S, Zhou G, Tian Y, Wu Y, Sheng Z. Effect of carbachol on intestinal mucosal blood flow, activity of Na + -K + -ATPase, expression of aquaporin-1, and intestinal absorption rate during enteral resuscitation of burn shock in rats. J Burn Care Res . 2010;31(1):200 -206.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 363)</div>
+            <div class="list-content">30. GomezBI, McIntyre MK, Gurney JM, Chung KK, Cancio LC, Dubick MA, et al. Enteral resuscitation with oral rehydration solution to reduce acute kidney injury in burn victims: evidence from a porcine model. PLoS One . 2018; 13(5):e0195615.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 364)</div>
+            <div class="list-content">31. Venter M, Rode H, Sive A, Visser M. Enteral resuscitation and early enteral feeding in children with major burns -effect on McFarlane response to stress. Burns . 2007;33(4):464 -471.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 365)</div>
+            <div class="list-content">32. Burmeister DM, Little JS, Gomez BI, Gurney J, Chao T, Cancio LC, et al. Operational advantages of enteral resuscitation following burn injury in resource-poor environments: palatability of commercially available solutions. J Spec Oper Med . 2019;19(3):76 -81.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 366)</div>
+            <div class="list-content">33. Stewart BT, Nsaful K, Allorto N, Man Rai S. Burn care in low-resource and austere settings. Surg Clin North Am . 2023;103(3):551 -563.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 367)</div>
+            <div class="list-content">34. Atiyeh BS, Dibo SA, Ibrahim AE, Zgheib ER. Acute burn resuscitation and fluid creep: it is time for colloid rehabilitation. Ann Burns Fire Disasters . 2012;25(2):59 -65.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 368)</div>
+            <div class="list-content">35. Chung KK, Salinas J, Renz EM, Alvarado RA, King BT, Barillo DJ, et al. Simple derivation of the initial fluid rate for the resuscitation of severely burned adult combat casualties: in silico validation of the rule of 10. J Trauma . 2010;69(Suppl 1):S49 -S54.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 369)</div>
+            <div class="list-content">36. Aboelatta Y , Abdelsalam A. V olume overload of fluid resuscitation in acutely burned patients using transpulmonary thermodilution technique. J Burn Care Res . 2013;34(3):349 -354.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 370)</div>
+            <div class="list-content">37. Chiao HY, Chou CY, Tzeng YS, Wang CH, Chen SG, Dai NT. Goal-directed fluid resuscitation protocol based on arterial waveform analysis of major burn patients in a mass burn casualty. Ann Plast Surg . 2018;80(2S Suppl 1): S21 -S25.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 371)</div>
+            <div class="list-content">38. Cartotto R, Greenhalgh DG, Cancio C. Burn state of the science: fluid resuscitation. J Burn Care Res . 2017;38(3):e596 -e604.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 372)</div>
+            <div class="list-content">39. Greenhalgh DG, Cartotto R, Taylor SL, Fine JR, Lewis GM, Smith DJ Jr., et al. Burn resuscitation practices in North America: results of the Acute Burn ResUscitation multicenter Prospective Trial (ABRUPT). Ann Surg . 2023;277(3):512 -519.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 373)</div>
+            <div class="list-content">40. Comish P , Walsh M, Castillo-Angeles M, Kuhlenschmidt K, Carlson D, Arnoldo B, et al. Adoption of rescue colloid during burn resuscitation decreases fluid administered and restores end-organ perfusion. Burns . 2021; 47(8):1844 -1850.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 374)</div>
+            <div class="list-content">41. Gurney JM, Kozar RA, Cancio LC. Plasma for burn shock resuscitation: is it time to go back to the future? Transfusion . 2019;59(S2):1578 -1586.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 375)</div>
+            <div class="list-content">42. Brownson E, Pham T, Chung K. How to recognize a failed burn resuscitation. Surg Care Clin . 2016;32(4):567 -575.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 376)</div>
+            <div class="list-content">43. Osler T, Glance LG, Hosmer DW . Simplified estimates of the probability of death after burn injuries: extending and updating the Baux score. J Trauma . 2010;68(3):690 -697.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 377)</div>
+            <div class="list-content">44. Cap AP , Pidcoke HF , Spinella P , Strandenes G, Borgman MA, Schreiber M, et al. Damage control resuscitation. Mil Med . 2018;183:36 -43.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 379)</div>
+            <div class="list-content">45. Butler EK, Mills BM, Arbabi S, Bulger EM, Vavilala MS, Groner JI, et al. Association of blood component ratios with 24-hour mortality in injured children receiving massive transfusion. Crit Care Med . 2019;47(7):975 -983.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 380)</div>
+            <div class="list-content">46. Holcomb JB, Tilley BC, Baraniuk S, Fox EE, Wade CE, Podbielski JM, et al. Transfusion of plasma, platelets, and red blood cells in a 1:1:1 vs a 1:1:2 ratio and mortality in patients with severe trauma: the PROPPR randomized clinical trial. JAMA . 2015;313(5):471 -482.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 381)</div>
+            <div class="list-content">47. Zhang IY, Thomas M, Stewart BT, Curtis E, Blayney C, Mandell SP , et al. Validation of a low-cost simulation strategy for burn escharotomy training. Injury . 2020;51(9):2059 -2065.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 382)</div>
+            <div class="list-content">48. Stanton E, Gillenwater J, Pham TN, Sheckter CC. Temperature derangement on admission is associated with mortality in burn patients -a nationwide analysis and opportunity for improvement. J Burn Care Res . 2022;44(4): 845 -851.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 383)</div>
+            <div class="list-content">49. Ramsey WA, O'Neil CF, Corona AM, Cohen BL, Lyons NB, Meece MS, et al. Burn excision within 48 hours portends better outcomes than standard management: a nationwide analysis. J Trauma Acute Care Surg . 2023;95(1): 111 -115.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 384)</div>
+            <div class="list-content">50. Stewart BT, Sheckter CC, Nakarmi KK. Holistic approach to burn reconstruction and scar rehabilitation. Phys Med Rehabil Clin N Am . 2023; 34(4):883 -904.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 385)</div>
+            <div class="list-content">51. Claes KEY, De Decker I, Monstrey S, Shoham Y, Vyncke T, Depypere B, et al. Helpful hints in deciding what and when to operate after enzymatic debridement. Burns . 2022;49(1):80 -90.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 386)</div>
+            <div class="list-content">52. Loo YL, Goh BKL, Jeffery S. An overview of the use of bromelain-based enzymatic debridement (Nexobrid(R)) in deep partial and full thickness burns: appraising the evidence. J Burn Care Res . 2018;39(6):932 -938.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 387)</div>
+            <div class="list-content">53. Stewart BT, Pham T, Cancio L, O'Keefe G, Nordlund MJ, Day AG, et al. Higher energy delivery is associated with improved long-term survival among adults with major burn injury: a multicenter, multinational, observational study. J Trauma Acute Care Surg . 2024;97(5):812 -821.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 388)</div>
+            <div class="list-content">54. Bhalla A, Bamer AM, Temes C, Roaten K, Carrougher GJ, Schneider JC, et al. Posttraumatic stress disorder symptom clusters as predictors of pain interference in burn survivors: a burn model system National Database Study. J Burn Care Res . 2023;44(1):27 -34.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 389)</div>
+            <div class="list-content">55. Sheckter CC, Stewart BT, Barnes C, Walters A, Bhalla PI, Pham TN. Techniques and strategies for regional anesthesia in acute burn care-a narrative review. Burns Trauma . 2021;9:15.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 390)</div>
+            <div class="list-content">56. Grigorian A, Nahmias J, Schubl S, Gabriel V , Bernal N, Joe V . Rising mortality in patients with combined burn and trauma. Burns . 2018;44(8): 1989 -1996.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 391)</div>
+            <div class="list-content">57. Hawkins A, Maclennan P , McGwin G, Cross J, Rue L. The impact of combined trauma and burns on patient mortality. J Trauma . 2005;58(2):284 -288.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 392)</div>
+            <div class="list-content">58. Bui D, Sivakumar BS, Ellis A. Collocated burn and fracture injuries in major trauma: a 10 year experience. Ann R Coll Surg Engl . 2020;102(4):256 -262.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 393)</div>
+            <div class="list-content">59. Bradshaw L, Wasiak J, Cleland H. Is operative management of fractures safe in the collocated burn and fracture injury? Injury . 2015;46(6):1145 -1149.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 394)</div>
+            <div class="list-content">60. Volpin G, Pfeifer R, Saveski J, Hasani I, Cohen M, Pape HC. Damage control orthopaedics in polytraumatized patients -current concepts. J Clin Orthop Trauma . 2021;12(1):72 -82.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 395)</div>
+            <div class="list-content">61. Pfeifer R, Kalbas Y , Coimbra R, Leenen L, Komadina R, Hildebrand F , et al. Indications and interventions of damage control orthopedic surgeries: an expert opinion survey. Eur J Trauma Emerg Surg . 2021;47(6):2081 -2092.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 396)</div>
+            <div class="list-content">62. Megahed MA, Elkashity SA, Talaab AA, AboShaban MS. The impact of human skin allograft as a temporary substitute for early coverage of major burn wounds on clinical outcomes and mortality. Ann Burns Fire Disasters . 2021; 34(1):67 -74.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 397)</div>
+            <div class="list-content">63. Pruitt BA Jr. Fluid and electrolyte replacement in the burned patient. Surg Clin N Am . 1978;58(6):1291 -1312.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 398)</div>
+            <div class="list-content">64. Flierl MA, Stahel PF , Touban BM, Beauchamp KM, Morgan SJ, Smith WR, et al. Bench-to-bedside review: burn-induced cerebral inflammation -a neglected entity? Crit Care . 2009;13(3):215.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 399)</div>
+            <div class="list-content">65. Concannon E, Fitzgerald L, Canniff E, Birrane J, Harbison J, Shelley O. Neuroimaging provides relevant clinical information in patients with burn injuries. Burns . 2020;46(3):552 -560.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 400)</div>
+            <div class="list-content">66. Walton MN, Hamilton LA, Kennedy SJ, Veve MP , Rowe AS. Antibiotic prophylaxis and incidence of infection with external ventricular drains and intracranial pressure monitors. Surg Inf . 2022;23(3):262 -269.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 401)</div>
+            <div class="list-content">67. Huang PP , Stucky FS, Dimick AR, Treat RC, Bessey PQ, Rue LW . Hypertonic sodium resuscitation is associated with renal failure and death. Ann Surg . 1995;221(5):543 -554 discussion 54 -7.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 402)</div>
+            <div class="list-content">68. Foncerrada G, Culnan DM, Capek KD, Gonzalez-Trejo S, Cambiaso-Daniel J, Woodson LC, et al. Inhalation injury in the burned patient. Ann Plast Surg . 2018;80(3 Suppl 2):S98 -S105.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 403)</div>
+            <div class="list-content">69. Saffle JR, Morris SE, Edelman L. Early tracheostomy does not improve outcome in burn patients. J Burn Care Res . 2002;23(6):431 -438.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 404)</div>
+            <div class="list-content">70. Tsuchiya A, Yamana H, Kawahara T, Tsutsumi Y, Matsui H, Fushimi K, et al. Tracheostomy and mortality in patients with severe burns: a nationwide observational study. Burns . 2018;44(8):1954 -1961.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 405)</div>
+            <div class="list-content">71. Smailes ST, Ives M, Richardson P , Martin RV , Dziewulski P . Percutaneous dilational and surgical tracheostomy in burn patients: incidence of complications and dysphagia. Burns . 2014;40(3):436 -442.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 406)</div>
+            <div class="list-content">72. Ramirez JI, Sen S, Palmieri TL, Greenhalgh DG. Timing of laparotomy and closure in burn patients with abdominal compartment syndrome: effects on survival. J Am Coll Surg . 2018;226(6):1175 -1180.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 407)</div>
+            <div class="list-content">73. Rola P , Miralles-Aguiar F , Argaiz E, Beaubien-Souligny W , Haycock K, Karimov T, et al. Clinical applications of the venous excess ultrasound (VExUS) score: conceptual review and case series. Ultras J . 2021;13(1):32.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 408)</div>
+            <div class="list-content">74. Hardin MO, Mace JE, Ritchie JD, Chung KK, Markell KW , Renz EM, et al. An experience in the management of the open abdomen in severely injured burn patients. J Burn Care Res . 2012;33(4):491 -496.</div>
+        </div>
+        
+        <div class="content-item list-item">
+            <div class="content-meta">📝 List Item (Line 409)</div>
+            <div class="list-content">75. Burns FA, Heywood EG, Challand CP , Lee MJ. Is there a role for prophylactic mesh in abdominal wall closure after emergency laparotomy? A systematic review and meta-analysis. Hernia . 2020;24(3):441 -447.</div>
+        </div>
+        
+        </div>
+        
+        
+    </div>
+    
+        </div>
+        
+        <div class="footer">
+            Generated by Document Structure Visualizer • 2025-07-21 12:31:51
+        </div>
+    </div>
+</body>
+</html>
+    
