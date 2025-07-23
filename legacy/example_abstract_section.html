@@ -1,0 +1,484 @@
+
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Abstract Section</title>
+            <style>
+                
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem 0;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .subtitle {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .document-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+
+        .stats-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            border-left: 4px solid #28a745;
+        }
+
+        .stat-detail {
+            font-size: 0.9rem;
+            color: #6c757d;
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        .content {
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+        .section-meta {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .section-stats details summary {
+            cursor: pointer;
+            padding: 0.5rem;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+
+        .mini-stats .stats-card {
+            margin-bottom: 1rem;
+            padding: 1rem;
+        }
+
+        .section-content {
+            space-y: 1rem;
+        }
+
+        .content-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .text-item {
+            border-left: 4px solid #007bff;
+        }
+
+        .image-item {
+            border-left: 4px solid #28a745;
+        }
+
+        .list-item {
+            border-left: 4px solid #ffc107;
+        }
+
+        .heading-item {
+            border-left: 4px solid #dc3545;
+        }
+
+        .table-item {
+            border-left: 4px solid #6f42c1;
+        }
+
+        .content-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .text-content {
+            line-height: 1.7;
+        }
+
+        .text-content code {
+            background: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .text-content a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .text-content a:hover {
+            text-decoration: underline;
+        }
+
+        .markdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .markdown-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .markdown-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .markdown-table tbody tr:nth-of-type(even) {
+            background: #f8f9fa;
+        }
+
+        .markdown-table tbody tr:hover {
+            background: #e3f2fd;
+            cursor: pointer;
+        }
+
+        .markdown-table tbody tr:last-of-type td {
+            border-bottom: none;
+        }
+
+        .list-content {
+            line-height: 1.7;
+        }
+
+        .content-heading {
+            color: #2c3e50;
+        }
+
+        .image-container {
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .image-container img:hover {
+            transform: scale(1.02);
+        }
+
+        .image-error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #f5c6cb;
+        }
+
+        .image-caption {
+            margin-top: 0.5rem;
+            font-style: italic;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        .table-of-contents {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+        }
+
+        .table-of-contents ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .table-of-contents li {
+            margin: 0.5rem 0;
+        }
+
+        .table-of-contents a {
+            color: #007bff;
+            text-decoration: none;
+            padding: 0.5rem;
+            display: block;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .table-of-contents a:hover {
+            background: #dee2e6;
+        }
+
+        .depth-0 { margin-left: 0; }
+        .depth-1 { margin-left: 1rem; }
+        .depth-2 { margin-left: 2rem; }
+        .depth-3 { margin-left: 3rem; }
+        .depth-4 { margin-left: 4rem; }
+        .depth-5 { margin-left: 5rem; }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem 0;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 0;
+            }
+
+            .depth-1, .depth-2, .depth-3, .depth-4, .depth-5 {
+                margin-left: 0.5rem;
+            }
+        }
+        
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>📄 Abstract Section</h1>
+                    <div class="subtitle">Generated by Chunk Monkey</div>
+                </div>
+
+                <div class="document-info">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Total Items:</strong> 0
+                        </div>
+                        <div class="info-item">
+                            <strong>Processed:</strong> 
+                        </div>
+                        <div class="info-item">
+                            <strong>Sections:</strong> 1
+                        </div>
+                    </div>
+                </div>
+
+                
+        <div class="stats-card">
+            <h3>📊 Document Statistics</h3>
+            <div class="stats-grid">
+                <div class='stat-item'><strong>Total Content:</strong> 10</div><div class='stat-item'><strong>Total Tables:</strong> 0</div><div class='stat-item'><strong>Total Images:</strong> 0</div><div class='stat-item'><strong>Total References:</strong> 0</div><div class='stat-item'><strong>Content Types:</strong><br><span class='stat-detail'>textitem: 10</span></div>
+            </div>
+        </div>
+        
+
+                
+        <div class="table-of-contents">
+            <h3>📑 Table of Contents</h3>
+            <ul>
+                <li><a href="#content-section">📄 Content</a></li>
+            </ul>
+        </div>
+        
+
+                <div class="content">
+                    
+        <div class="section" id="section-content">
+            <div class="section-header">
+                <h2 class="section-title">Content</h2>
+                <div class="section-meta">
+                    <span class="section-stats">Content • 10 items</span>
+                </div>
+            </div>
+            
+        <div class="mini-stats">
+            <div class="stats-card">
+                <details>
+                    <summary>📊 Section Stats (10 items)</summary>
+                    <div class="stat-item">Type: Content</div>
+                    <div class="stat-item">Items: 10</div>
+                </details>
+            </div>
+        </div>
+        
+            <div class="section-content">
+                
+            <div class="content-item heading-item depth-1" id="there-are-nearly-700000-adults-and-children-with-burn-injuries-who-seek-care-in-america-each-year-while-most-patients-with-major-burn-injuries-are-cared-for-at-american-burn-association-verified-burn-centers-many-of-them-present-to-nonburn-centers-initially-or-present-with-combined-burns-and-other-injuries-despite-this-burn-surgery-is-no-longer-mandated-by-the-accreditation-council-for-graduate-medical-education-for-general-surgery-residency-and-is-rarely-a-meaningful-component-of-surgical-critical-care-fellowships-however-general-surgeons-are-called-to-participate-in-and-occasionally-lead-the-care-of-adults-and-children-with-burn-injuries-when-burn-expertise-is-not-available-for-patients-with-combined-burns-and-other-injuries-when-procedures-are-required-in-intensive-care-units-andor-during-multiple-casualty-incidents-and-disasters-fundamental-burn-care-knowledge-and-skills-deployed-during-these-moments-can-radically-impact-patients-chances-of-survival-and-future-quality-of-life-this-clinical-review-covers-burn-specific-aspects-of-the-primary-survey-and-follows-the-abcde-approach-additional-details-about-core-burn-care-principles-eg-inhalation-injury-resuscitation-wound-care-and-special-considerations-in-combined-burns-and-other-injuries-are-also-presented-eg-burns-with-concomitant-abdominal-thoracic-skeletal-andor-intracranial-injuryies-j-trauma-acute-care-surg-202599-10-23-copyright-2025-wolters-kluwer-health-inc-all-rights-reserved">
+                <div class="content-meta">
+                    <span class="item-type">📑 Heading 1</span>
+                </div>
+                <h1 class="content-heading">There are nearly 700,000 adults and children with burn injuries who seek care in America each year. While most patients with major burn injuries are cared for at American Burn Association -verified burn centers, many of them present to nonburn centers initially or present with combined burns and other injuries. Despite this, burn surgery is no longer mandated by the Accreditation Council for Graduate Medical Education for general surgery residency and is rarely a meaningful component of surgical critical care fellowships. However, general surgeons are called to participate in and, occasionally, lead the care of adults and children with burn injuries when burn expertise is not available, for patients with combined burns and other injuries, when procedures are required, in intensive care units, and/or during multiple casualty incidents and disasters. Fundamental burn care knowledge and skills deployed during these moments can radically impact patients' chances of survival and future quality of life. This clinical review covers burn-specific aspects of the primary survey and follows the ABCDE approach. Additional details about core burn care principles (e.g., inhalation injury, resuscitation, wound care) and special considerations in combined burns and other injuries are also presented (e.g., burns with concomitant abdominal, thoracic, skeletal, and/or intracranial injury(ies)). ( J Trauma Acute Care Surg. 2025;99: 10 -23. Copyright © 2025 Wolters Kluwer Health, Inc. All rights reserved.)</h1>
+            </div>
+            
+            <div class="content-item heading-item depth-1" id="key-words-burns-inhalation-injury-resuscitation-wound-care">
+                <div class="content-meta">
+                    <span class="item-type">📑 Heading 1</span>
+                </div>
+                <h1 class="content-heading">KEY WORDS: Burns; inhalation injury; resuscitation; wound care.</h1>
+            </div>
+            
+            <div class="content-item heading-item depth-1" id="t-here-are-nearly-700000-adults-and-children-with-burn-injuries-who-seek-care-in-america-each-year-1-most-of-those-are-cared-for-in-the-outpatient-setting-and-rarely-require-attention-from-general-surgeons-2-about-30000-patients-with-burn-injuries-are-admitted-to-hospitals-annually-and-half-of-those-have-relatively-minor-injuries-not-requiring-surgical-care-the-remainder-around-10000-patients-each-year-have-more-extensive-injuries-requiring-emergency-procedures-critical-care-andor-surgery-and-80-of-those-are-cared-for-at-american-burn-association-verified-burn-centers-by-well-orchestrated-multidisciplinary-teams-organized-to-provide-high-quality-care-across-the-injury-continuum-3-5-thus-thousands-of-burninjured-patients-are-cared-for-outside-of-burn-centers-or-present-to-nonburn-centers-for-stabilization-and-may-require-care-by-general-surgeons-importantly-general-surgeons-are-keystones-of-care-for-patients-with-multidimensional-trauma-who-represent-between-05-and-12-of-injured-patients-at-trauma-centers-nationally-67">
+                <div class="content-meta">
+                    <span class="item-type">📑 Heading 1</span>
+                </div>
+                <h1 class="content-heading">T here are nearly 700,000 adults and children with burn injuries who seek care in America each year. 1 Most of those are cared for in the outpatient setting and rarely require attention from general surgeons. 2 About 30,000 patients with burn injuries are admitted to hospitals annually, and half of those have relatively minor injuries not requiring surgical care. The remainder, around 10,000 patients each year, have more extensive injuries requiring emergency procedures, critical care, and/or surgery, and 80% of those are cared for at American Burn Association -verified burn centers by well-orchestrated multidisciplinary teams organized to provide high-quality care across the injury continuum. 3 -5 Thus, thousands of burninjured patients are cared for outside of burn centers or present to nonburn centers for stabilization and may require care by general surgeons. Importantly, general surgeons are keystones of care for patients with multidimensional trauma, who represent between 0.5% and 1.2% of injured patients at trauma centers nationally. 6,7</h1>
+            </div>
+            
+            <div class="content-item heading-item depth-1" id="despite-the-need-for-broadly-trained-general-and-trauma-surgeons-burn-surgery-is-no-longer-mandated-by-the-accreditation-council-for-graduate-medical-education-for-general-surgery">
+                <div class="content-meta">
+                    <span class="item-type">📑 Heading 1</span>
+                </div>
+                <h1 class="content-heading">Despite the need for broadly trained general and trauma surgeons, burn surgery is no longer mandated by the Accreditation Council for Graduate Medical Education for general surgery</h1>
+            </div>
+            
+            <div class="content-item heading-item depth-1" id="submitted-november-14-2024-revised-february-14-2025-accepted-november-24-2024-published-online-march-13-2025">
+                <div class="content-meta">
+                    <span class="item-type">📑 Heading 1</span>
+                </div>
+                <h1 class="content-heading">Submitted: November 14, 2024, Revised: February 14, 2025, Accepted: November 24, 2024, Published online: March 13, 2025.</h1>
+            </div>
+            
+            <div class="content-item heading-item depth-1" id="from-the-division-of-trauma-burn-and-critical-care-surgery-bts-dj-sa-harborview-medical-center-university-of-washington-seattle-washington-division-of-acute-care-surgery-mah-university-of-michigan-ann-arbor-michigan-department-of-surgery-lj-emory-university-atlanta-georgia-and-department-of-surgery-lj-uniformed-services-university-of-the-health-sciences-bethesda-maryland">
+                <div class="content-meta">
+                    <span class="item-type">📑 Heading 1</span>
+                </div>
+                <h1 class="content-heading">From the Division of Trauma, Burn and Critical Care Surgery (B.T.S., D.J., S.A.), Harborview Medical Center, University of Washington, Seattle, Washington; Division of Acute Care Surgery (M.A.H.), University of Michigan, Ann Arbor, Michigan; Department of Surgery (L.J.), Emory University, Atlanta, Georgia; and Department of Surgery (L.J.), Uniformed Services University of the Health Sciences, Bethesda, Maryland.</h1>
+            </div>
+            
+            <div class="content-item heading-item depth-1" id="address-for-correspondence-barclay-t-stewart-md-phd-facs-division-of-trauma-burn-and-critical-care-surgery-harborview-medical-center-university-of-washington-325-9th-a-ve-box-359796-seattle-w-a-98104-email-barclaysuwedu">
+                <div class="content-meta">
+                    <span class="item-type">📑 Heading 1</span>
+                </div>
+                <h1 class="content-heading">Address for correspondence: Barclay T. Stewart, MD, PhD, FACS, Division of Trauma, Burn and Critical Care Surgery, Harborview Medical Center, University of Washington, 325 9th A ve, Box 359796, Seattle, W A 98104; email: barclays@uw.edu.</h1>
+            </div>
+            
+            <div class="content-item heading-item depth-1" id="doi-101097ta0000000000004559">
+                <div class="content-meta">
+                    <span class="item-type">📑 Heading 1</span>
+                </div>
+                <h1 class="content-heading">DOI: 10.1097/TA.0000000000004559</h1>
+            </div>
+            
+            <div class="content-item heading-item depth-1" id="residency-and-is-rarely-a-meaningful-component-of-surgical-critical-care-fellowships-8-however-general-surgeons-are-called-to-participate-in-and-occasionally-lead-the-care-of-adults-and-children-with-burn-injuries-when-local-burn-expertise-is-not-available-for-patients-with-combined-burns-and-other-injuries-when-procedures-are-required-in-intensive-care-units-and-during-multiple-casualty-incidents-and-disasters-fundamental-burn-care-knowledge-and-skills-deployed-during-these-moments-can-radically-impact-patients-chances-of-survival-and-future-quality-of-life-9-13">
+                <div class="content-meta">
+                    <span class="item-type">📑 Heading 1</span>
+                </div>
+                <h1 class="content-heading">residency and is rarely a meaningful component of surgical critical care fellowships. 8 However, general surgeons are called to participate in and, occasionally, lead the care of adults and children with burn injuries when local burn expertise is not available, for patients with combined burns and other injuries, when procedures are required, in intensive care units, and during multiple casualty incidents and disasters. Fundamental burn care knowledge and skills deployed during these moments can radically impact patients' chances of survival and future quality of life. 9 -13</h1>
+            </div>
+            
+            <div class="content-item heading-item depth-1" id="this-clinical-review-covers-burn-specific-aspects-of-the-initial-assessment-and-follow-the-abcde-approach-table-1-additional-details-about-core-burn-care-principles-eg-inhalation-injury-resuscitation-wound-care-and-special-considerations-in-combined-burns-and-other-injuries-are-also-presented-lastly-this-review-is-biased-toward-larger-injuries-as-there-is-often-less-time-for-review-of-core-principles-and-inaction-has-life-and-limbthreatening-consequences">
+                <div class="content-meta">
+                    <span class="item-type">📑 Heading 1</span>
+                </div>
+                <h1 class="content-heading">This clinical review covers burn-specific aspects of the initial assessment and follow the ABCDE approach (Table 1). Additional details about core burn care principles (e.g., inhalation injury, resuscitation, wound care) and special considerations in combined burns and other injuries are also presented. Lastly, this review is biased toward larger injuries, as there is often less time for review of core principles and inaction has life- and limbthreatening consequences.</h1>
+            </div>
+            
+            </div>
+        </div>
+        
+                </div>
+
+                <div class="footer">
+                    <p>Generated by Chunk Monkey PDF Processing Pipeline</p>
+                    <p>Processing timestamp: </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        

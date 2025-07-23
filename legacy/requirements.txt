@@ -1,0 +1,63 @@
+# Chunk Monkey - PDF Processing Pipeline
+# Requirements file for production installation
+
+# Core document processing
+docling>=2.42.0
+pypdf>=5.8.0
+
+# LLM and AI integration
+langchain>=0.3.26
+langchain-community>=0.3.27
+langchain-experimental>=0.3.4
+langchain-ollama>=0.3.5
+langchain-openai>=0.3.28
+
+# Environment and configuration
+python-dotenv>=1.1.1
+
+# Terminal output and user interface
+rich>=14.0.0
+
+# Image processing (for Docling)
+Pillow>=10.0.0
+
+# Data processing and utilities
+pandas>=2.0.0
+numpy>=1.24.0
+
+# HTTP requests and web utilities
+requests>=2.31.0
+urllib3>=2.0.0
+
+# Text processing and natural language
+regex>=2023.10.3
+unidecode>=1.3.7
+
+# File format support
+markdown>=3.5.0
+html5lib>=1.1
+
+# Progress bars and CLI utilities
+tqdm>=4.66.0
+click>=8.1.7
+
+# Logging and monitoring
+structlog>=23.2.0
+
+# Optional: Development and testing dependencies
+# Uncomment for development environment
+# pytest>=7.4.0
+# pytest-cov>=4.1.0
+# black>=23.9.0
+# flake8>=6.1.0
+# mypy>=1.6.0
+# pre-commit>=3.5.0
+
+# Optional: Advanced features
+# Uncomment if needed
+# chromadb>=0.4.0  # For vector storage
+# faiss-cpu>=1.7.4  # For similarity search
+# transformers>=4.35.0  # For advanced NLP
+# torch>=2.0.0  # For ML models
+# scikit-learn>=1.3.0  # For clustering and ML
+# spacy>=3.7.0  # For advanced text processing

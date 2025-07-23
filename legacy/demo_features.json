@@ -1,0 +1,110 @@
+{
+  "document_info": {
+    "source_file": "demo_features.md",
+    "total_lines": 20,
+    "structure_type": "demo_document",
+    "statistics": {
+      "total_sections": 3,
+      "total_images": 2,
+      "total_text_blocks": 5,
+      "max_depth": 1
+    }
+  },
+  "content": [
+    {
+      "type": "section",
+      "level": 2,
+      "title": "Markdown Table Demo",
+      "line_number": 1,
+      "content": [
+        {
+          "type": "text",
+          "line_number": 3,
+          "content": "Here is a sample markdown table that should be converted to HTML:\n\n| Feature | Status | Priority |\n|---------|--------|----------|\n| Base64 Images | ✅ Complete | High |\n| Markdown Tables | ✅ Complete | High |\n| Text Formatting | ✅ Complete | Medium |\n| **Bold Text** | ✅ Complete | Low |\n| *Italic Text* | ✅ Complete | Low |"
+        },
+        {
+          "type": "text",
+          "line_number": 12,
+          "content": "This text contains **bold formatting**, *italic text*, and `inline code` formatting. It also has a [link to Google](https://google.com) that should be clickable."
+        }
+      ],
+      "subsections": [],
+      "statistics": {
+        "total_items": 2,
+        "content_types": {
+          "text": 2
+        },
+        "image_count": 0,
+        "text_blocks": 2,
+        "list_items": 0,
+        "table_rows": 0,
+        "subsection_count": 0
+      }
+    },
+    {
+      "type": "section",
+      "level": 2,
+      "title": "Base64 Image Demo",
+      "line_number": 15,
+      "content": [
+        {
+          "type": "text",
+          "line_number": 17,
+          "content": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+        },
+        {
+          "type": "text",
+          "line_number": 18,
+          "content": "The above should be displayed as a tiny 1x1 pixel red image (base64 encoded)."
+        }
+      ],
+      "subsections": [],
+      "statistics": {
+        "total_items": 2,
+        "content_types": {
+          "text": 2
+        },
+        "image_count": 1,
+        "text_blocks": 1,
+        "list_items": 0,
+        "table_rows": 0,
+        "subsection_count": 0
+      }
+    },
+    {
+      "type": "section",
+      "level": 2,
+      "title": "List Demo",
+      "line_number": 20,
+      "content": [
+        {
+          "type": "numbered_list",
+          "line_number": 22,
+          "content": "First item with **bold** text"
+        },
+        {
+          "type": "numbered_list",
+          "line_number": 23,
+          "content": "Second item with *italic* text"
+        },
+        {
+          "type": "numbered_list",
+          "line_number": 24,
+          "content": "Third item with `inline code`"
+        }
+      ],
+      "subsections": [],
+      "statistics": {
+        "total_items": 3,
+        "content_types": {
+          "numbered_list": 3
+        },
+        "image_count": 0,
+        "text_blocks": 0,
+        "list_items": 3,
+        "table_rows": 0,
+        "subsection_count": 0
+      }
+    }
+  ]
+}
