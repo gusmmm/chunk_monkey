@@ -1,7 +1,0 @@
-# filepath: /home/gusmmm/Desktop/playground/chunk_monkey/config.yml
-pipeline:
-  - name: "pdf"
-  - name: "structure"
-  - name: "vision"
-  - name: "ocr"
-  - name: "markdown"

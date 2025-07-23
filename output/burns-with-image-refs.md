@@ -116,15 +116,15 @@ Smoke contains many gases, and several of them have described toxidromes. The tw
 
 The treatment for CO toxicity is administration of 100% oxygen. The half-life of COHb when breathing 21% oxygen is approximately 4 to 5 hours, which can be decreased to approximately 90 minutes with 100% oxygen. Initial %COHb can be estimated using established nomograms. Administration of hyperbaric oxygen will decrease this half-life even further. However, hyperbaric chambers are not practical for critically injured patients. Furthermore, meta-analyses have not found sufficient evidence to support the use of hyperbaric over normobaric oxygen for preventing mortality or neuropsychiatric sequelae after CO toxicity. 22
 
-![Image](burns-with-image-refs_artifacts/image_000000_ca29b3524c4342b127e54bb4da292f3a81ad4fa52201385cd5591a86f43af29b.png)
+![Image](/home/gusmmm/Desktop/chunk_monkey/output/burns-with-image-refs_artifacts/image_000000_ca29b3524c4342b127e54bb4da292f3a81ad4fa52201385cd5591a86f43af29b.png)
 
-![Image](burns-with-image-refs_artifacts/image_000001_c1edcb25acfec4b370a4864e1f83c134e38a2f2be023d3c0bbd1527c1d65f56f.png)
+![Image](/home/gusmmm/Desktop/chunk_monkey/output/burns-with-image-refs_artifacts/image_000001_c1edcb25acfec4b370a4864e1f83c134e38a2f2be023d3c0bbd1527c1d65f56f.png)
 
-![Image](burns-with-image-refs_artifacts/image_000002_378d45555ee3e4efcda2831bf1c43556f5f862338fbe9c3b449b2c17210db8ce.png)
+![Image](/home/gusmmm/Desktop/chunk_monkey/output/burns-with-image-refs_artifacts/image_000002_378d45555ee3e4efcda2831bf1c43556f5f862338fbe9c3b449b2c17210db8ce.png)
 
-![Image](burns-with-image-refs_artifacts/image_000003_d534ec2030ac960fe019890fbee9e8f4cfcc84bec6932019065534ba22c86100.png)
+![Image](/home/gusmmm/Desktop/chunk_monkey/output/burns-with-image-refs_artifacts/image_000003_d534ec2030ac960fe019890fbee9e8f4cfcc84bec6932019065534ba22c86100.png)
 
-![Image](burns-with-image-refs_artifacts/image_000004_c321f063981e76a0d3f286a817ca217dda3276650521d5491b6217ba134ee830.png)
+![Image](/home/gusmmm/Desktop/chunk_monkey/output/burns-with-image-refs_artifacts/image_000004_c321f063981e76a0d3f286a817ca217dda3276650521d5491b6217ba134ee830.png)
 
 Figure 1. Abbreviated Injury Scale for inhalation injury with corresponding bronchoscopy images.
 
@@ -142,11 +142,11 @@ Patients with chronic obstructive pulmonary disease or other chronic, severe pul
 
 Figure 2. Example escharotomy incisions and technique. 1, Escharotomy should be performed using extensile incisions and extend only across full-thickness burns (i.e., third-degree or deeper burns) while avoiding boney prominences and neurovascular structures beneath the skin. 2, The incisions should only be deep enough to release the eschar, usually only through dermis and subdermal bands. 3, In addition to extensile incisions, transverse or connecting incisions may be required to achieve complete release. 4, Care should be taken to stop bleeding as it starts, including ligation of injured vessels, as bleeding can be significant as flow is restored, resuscitation improves peripheral perfusion, and consumptive and dilutional coagulopathy ensues. 5, Surgical or enzymatic escharectomy should be done only in consultation with burn care providers. ( A ) Example incisions for escharotomy. ( B ) Left medial arm escharotomy. ( C ) Left lateral arm and dorsal hand escharotomy. The left arm escharotomy is not yet complete proximally. Image ( A ) adapted from Butts C, Holmes JH, Carter JE, Surgical Escharotomy and Decompressive Therapies in Burns, J. Burn Care Res. , 2020;41(2):263 -269.
 
-![Image](burns-with-image-refs_artifacts/image_000005_0601841430a1702ce84f561163e0ccf8ce28c8036609844e5d1a146f56ea42df.png)
+![Image](/home/gusmmm/Desktop/chunk_monkey/output/burns-with-image-refs_artifacts/image_000005_0601841430a1702ce84f561163e0ccf8ce28c8036609844e5d1a146f56ea42df.png)
 
-![Image](burns-with-image-refs_artifacts/image_000006_ee46da0a04ff8da5dafd61c2193848f588b90dcc4ac42b731bcaf953fee529e7.png)
+![Image](/home/gusmmm/Desktop/chunk_monkey/output/burns-with-image-refs_artifacts/image_000006_ee46da0a04ff8da5dafd61c2193848f588b90dcc4ac42b731bcaf953fee529e7.png)
 
-![Image](burns-with-image-refs_artifacts/image_000007_875c1cdaedc7ee6477297a65d8353ed0145c7d9e62d29b1d1ec00593ee7e8014.png)
+![Image](/home/gusmmm/Desktop/chunk_monkey/output/burns-with-image-refs_artifacts/image_000007_875c1cdaedc7ee6477297a65d8353ed0145c7d9e62d29b1d1ec00593ee7e8014.png)
 
 for significant lip swelling but may be required for acute on chronic hypoxemia or hypercarbia. chronic obstructive pulmonary disease exacerbation can occur (or was the cause of using oxygen while smoking when that behavior was generally avoided), and routine medical management is appropriate.
 
@@ -215,7 +215,7 @@ Complete exposure in the emergency unit allows inspection for other injuries, ac
 
 Figure 3. Example algorithm to guide resuscitation for patients with combined burn and other injuries. MAP, mean arterial pressure; ScvO2, central venous oxygen saturation; IV, intravenous; PLR, passive leg raise; CVP, central venous pressure; POCUS, point-of-care ultrasound examination(s); PPV, pulse pressure variation; SVV, stroke volume variation; Echo, echocardiography; PAC, pulmonary artery or Swan-Ganz catheter.
 
-![Image](burns-with-image-refs_artifacts/image_000008_19da4f514ac52015ffa0868ceb3ba040beab81963e40f3876e640aa4c0555b7c.png)
+![Image](/home/gusmmm/Desktop/chunk_monkey/output/burns-with-image-refs_artifacts/image_000008_19da4f514ac52015ffa0868ceb3ba040beab81963e40f3876e640aa4c0555b7c.png)
 
 healing, sepsis, multiple-organ dysfunction syndrome, and death. 48 Therefore, exposure should be minimized. Photos can be quickly taken before the patient is again covered and warmed to allow multiple providers to see and understand the injury and estimate burn depth and size with less time pressure. Passive warming is necessary but insufficient (e.g., warm room, warm blankets, Mylar head covering) for adults and children with ≥ 10% to 20% TBSA injuries. Evaporative cooling should be prevented by coverage with Mylar blankets, plastic gowns, or greasy dressings. Active warming with forced air warming blankets, warmed fluids, warm humidified air/oxygen, radiant heat lamps, and/or intravascular or intra-esophageal warming devices may be required. Invasive devices are used when core temperatures are &lt;35°C.
 
@@ -321,9 +321,9 @@ General surgeons play key roles in supporting the care of injured patients and w
 
 Figure 4. Managementoftheopenabdomenwithabdominalburns.A,Conventional negative-pressure strategies to manage the open abdomen are generally not successful when used on an abdomen with abdominal burns, no skin, or skin substitutes. B, A Bogotá bag (e.g., silastic sheet, 3 L irrigation bag) sewn to the fascia, skin, or eschar can be effective.
 
-![Image](burns-with-image-refs_artifacts/image_000009_9b1da0f9bbf5f256c0185d0d553815d73a823c3033f6faad3e4c84270367bb52.png)
+![Image](/home/gusmmm/Desktop/chunk_monkey/output/burns-with-image-refs_artifacts/image_000009_9b1da0f9bbf5f256c0185d0d553815d73a823c3033f6faad3e4c84270367bb52.png)
 
-![Image](burns-with-image-refs_artifacts/image_000010_cf3a803387995c4e34c7727a005f67ef250d48ba1e8794abe978f6fc151de88c.png)
+![Image](/home/gusmmm/Desktop/chunk_monkey/output/burns-with-image-refs_artifacts/image_000010_cf3a803387995c4e34c7727a005f67ef250d48ba1e8794abe978f6fc151de88c.png)
 
 ## DISCLOSURE
 
