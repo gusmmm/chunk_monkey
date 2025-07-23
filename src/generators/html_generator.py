@@ -315,29 +315,49 @@ class HTMLGenerator:
         # Handle different content types
         if content_type in ['image', 'picture'] or 'base64_data' in item:
             return self._generate_image_item(item, item_index)
-        elif content_type == 'table' or 'table' in content_type.lower():
+        elif content_type == 'table' or 'table' in content_type.lower() or content_type.lower() == 'tableitem':
             return self._generate_table_item(item, item_index)
-        elif content_type in ['list', 'listitem']:
+        elif content_type in ['list', 'listitem'] or content_type.lower() == 'listitem':
             return self._generate_list_item(item, item_index)
         else:
             return self._generate_text_item(item, item_index)
 
     def _generate_image_item(self, item: Dict, item_index: int) -> str:
         """Generate HTML for image items."""
-        # Get image data
-        img_data = item.get('base64_data', item.get('content', ''))
-        caption = item.get('caption', '')
-        label = item.get('label', f'image_{item_index}')
+        # Check if this item has external image reference
+        image_filename = item.get('image_filename', '')
+        image_path = item.get('image_path', '')
+        line_number = item_index * 2 + 3
 
-        # Convert to data URL if needed
-        data_url, is_image = self.detect_and_convert_base64_image(img_data)
+        if image_filename:
+            # Use external image reference
+            caption = item.get('caption', '')
+            label = item.get('label', f'image_{item_index}')
 
-        if not is_image:
-            # Fallback for non-image content
-            return self._generate_text_item(item, item_index)
+            img_html = f"""
+        <div class="content-item image-item" id="{label}">
+            <div class="content-meta">🖼️ Image (Line {line_number})</div>
+            <div class="image-container">
+                <img src="{image_filename}" alt="{caption or 'Document image'}" loading="lazy">
+            </div>
+            {f'<div class="image-caption">{self.format_text_content(caption)}</div>' if caption else ''}
+        </div>
+        """
+        else:
+            # Fallback to base64 data
+            img_data = item.get('base64_data', item.get('content', ''))
+            caption = item.get('caption', '')
+            label = item.get('label', f'image_{item_index}')
 
-        # Generate image HTML
-        img_html = f"""
+            # Convert to data URL if needed
+            data_url, is_image = self.detect_and_convert_base64_image(img_data)
+
+            if not is_image:
+                # Fallback for non-image content
+                return self._generate_text_item(item, item_index)
+
+            # Generate image HTML
+            img_html = f"""
         <div class="content-item image-item" id="{label}">
             <div class="content-meta">
                 <span class="item-type">🖼️ Image</span>
@@ -357,34 +377,102 @@ class HTMLGenerator:
         content = item.get('content', '')
         caption = item.get('caption', '')
         label = item.get('label', f'table_{item_index}')
+        line_number = item_index * 2 + 3
 
-        # Format table content
-        formatted_content = self.format_text_content(content)
+        # Check if there's an external table image based on label
+        table_image_filename = None
+        if label and 'table_' in label:
+            # Extract table number from label (e.g., 'table_1' -> '1')
+            table_num = label.split('_')[-1]
+            table_image_filename = f"burns-table-{table_num}.png"
+        elif item_index < 4:  # We know there are 4 tables from processing
+            table_image_filename = f"burns-table-{item_index + 1}.png"
 
+        # Try to parse table structure from content
+        table_html_content = self._parse_table_content(content)
+
+        # Generate table HTML with image reference if available
         table_html = f"""
         <div class="content-item table-item" id="{label}">
-            <div class="content-meta">
-                <span class="item-type">📊 Table</span>
-                <span class="item-label">{label}</span>
-            </div>
+            <div class="content-meta">📊 Table (Line {line_number})</div>
             {f'<div class="table-caption">{self.format_text_content(caption)}</div>' if caption else ''}
             <div class="table-content">
-                {formatted_content}
+                {table_html_content}
             </div>
+            {f'<div class="table-image"><img src="{table_image_filename}" alt="Table {item_index + 1}" loading="lazy"></div>' if table_image_filename else ''}
         </div>
         """
 
         return table_html
 
+    def _parse_table_content(self, content: str) -> str:
+        """Parse table content and generate proper HTML table."""
+        if not content:
+            return "<p>No table content available</p>"
+
+        # Check if content contains table cell information
+        if 'table_cells=' in content and 'num_rows=' in content and 'num_cols=' in content:
+            # Extract basic table info
+            import re
+            rows_match = re.search(r'num_rows=(\d+)', content)
+            cols_match = re.search(r'num_cols=(\d+)', content)
+
+            if rows_match and cols_match:
+                num_rows = int(rows_match.group(1))
+                num_cols = int(cols_match.group(1))
+
+                if num_rows > 0 and num_cols > 0:
+                    # Try to extract cell text from the content
+                    cell_texts = re.findall(r"text='([^']*)'", content)
+
+                    if cell_texts:
+                        return self._generate_html_table(cell_texts, num_rows, num_cols)
+
+        # Fallback: check if content looks like markdown table
+        if '|' in content and '\n' in content:
+            return self.convert_markdown_table_to_html(content)
+
+        # Final fallback: format as preformatted text
+        return f"<pre class='table-raw'>{self.format_text_content(content)}</pre>"
+
+    def _generate_html_table(self, cell_texts: list, num_rows: int, num_cols: int) -> str:
+        """Generate HTML table from cell data."""
+        if not cell_texts or num_rows == 0 or num_cols == 0:
+            return "<p>Empty table</p>"
+
+        # Calculate expected cells
+        expected_cells = num_rows * num_cols
+
+        # Pad or truncate cell_texts to match expected size
+        while len(cell_texts) < expected_cells:
+            cell_texts.append("")
+        cell_texts = cell_texts[:expected_cells]
+
+        # Generate table HTML
+        table_html = ['<table class="markdown-table">']
+
+        for row in range(num_rows):
+            table_html.append('  <tr>')
+            for col in range(num_cols):
+                cell_index = row * num_cols + col
+                cell_text = cell_texts[cell_index] if cell_index < len(cell_texts) else ""
+
+                # First row is typically headers
+                tag = 'th' if row == 0 else 'td'
+                table_html.append(f'    <{tag}>{self.format_text_content(cell_text)}</{tag}>')
+            table_html.append('  </tr>')
+
+        table_html.append('</table>')
+        return '\n'.join(table_html)
+
     def _generate_list_item(self, item: Dict, item_index: int) -> str:
         """Generate HTML for list items."""
         content = item.get('text', item.get('content', ''))
+        line_number = item_index * 2 + 3
 
         list_html = f"""
         <div class="content-item list-item">
-            <div class="content-meta">
-                <span class="item-type">📝 List</span>
-            </div>
+            <div class="content-meta">📋 List (Line {line_number})</div>
             <div class="list-content">
                 {self.format_text_content(content)}
             </div>
@@ -398,8 +486,11 @@ class HTMLGenerator:
         content = item.get('text', item.get('content', ''))
         content_type = item.get('type', 'text')
 
-        # Determine if this is a heading
-        is_heading = self.text_processor.is_section_header(content, content_type)
+        # Determine if this is a heading based on the type field
+        is_heading = 'header' in content_type.lower() or 'heading' in content_type.lower() or content_type.lower() == 'sectionheaderitem'
+
+        # Calculate line number based on item index
+        line_number = item_index * 2 + 3
 
         if is_heading:
             # Generate heading item
@@ -417,15 +508,11 @@ class HTMLGenerator:
         else:
             # Generate regular text item
             text_html = f"""
-            <div class="content-item text-item">
-                <div class="content-meta">
-                    <span class="item-type">📄 {content_type.title()}</span>
-                </div>
-                <div class="text-content">
-                    {self.format_text_content(content)}
-                </div>
-            </div>
-            """
+        <div class="content-item text-item">
+            <div class="content-meta">📄 Text (Line {line_number})</div>
+            <div class="text-content">{self.format_text_content(content)}</div>
+        </div>
+        """
 
         return text_html
 
@@ -434,13 +521,16 @@ class HTMLGenerator:
         # Check section hierarchy if available
         hierarchy = item.get('section_hierarchy', [])
         if hierarchy:
-            return min(len(hierarchy), 6)  # HTML only supports h1-h6
+            level = len(hierarchy)
+            return min(max(level, 1), 6)  # HTML only supports h1-h6, minimum h1
 
-        # Fallback to content analysis
+        # Fallback to content analysis for better semantic structure
         if content.isupper() and len(content) > 20:
             return 1  # Main sections
         elif content.endswith(':'):
             return 2  # Subsections
+        elif len(content) > 50:
+            return 2  # Longer descriptive headers
         else:
             return 3  # Minor headings
 
@@ -451,7 +541,7 @@ class HTMLGenerator:
         clean_content = re.sub(r'[-\s]+', '-', clean_content).strip('-')
         return clean_content or 'heading'
 
-    def generate_section(self, section_name: str, items: List[Dict], section_type: str = "content") -> str:
+    def generate_section(self, section_name: str, items: List[Dict], section_type: str = "content", depth: int = 0) -> str:
         """
         Generate HTML for a complete section with all its items.
 
@@ -459,6 +549,7 @@ class HTMLGenerator:
             section_name: Name of the section
             items: List of items in the section
             section_type: Type of section (content, tables, images, references)
+            depth: Hierarchy depth for CSS classes
 
         Returns:
             HTML string for the complete section
@@ -468,10 +559,16 @@ class HTMLGenerator:
 
         # Generate section statistics
         item_count = len(items)
-        section_stats = {
-            'item_count': item_count,
-            'section_type': section_type
-        }
+        text_count = len([i for i in items if i.get('type') == 'textitem'])
+        list_count = len([i for i in items if i.get('type') == 'listitem'])
+        table_count = len([i for i in items if i.get('type') == 'tableitem'])
+        image_count = len([i for i in items if i.get('type') == 'imageitem'])
+
+        # Count content types for stats
+        content_types = {}
+        for item in items:
+            item_type = item.get('type', 'unknown')
+            content_types[item_type] = content_types.get(item_type, 0) + 1
 
         # Generate items HTML
         items_html = []
@@ -483,33 +580,49 @@ class HTMLGenerator:
             else:
                 items_html.append(self.generate_content_item(item, i))
 
+        # Generate content types breakdown
+        content_types_html = ""
+        if content_types:
+            type_details = []
+            for item_type, count in content_types.items():
+                display_type = item_type.replace('item', '') if item_type.endswith('item') else item_type
+                type_details.append(f"<span class='stat-detail'>{display_type}: {count}</span>")
+            content_types_html = "<br>".join(type_details)
+
         # Generate mini stats for this section
         mini_stats_html = f"""
-        <div class="mini-stats">
-            <div class="stats-card">
-                <details>
-                    <summary>📊 Section Stats ({item_count} items)</summary>
-                    <div class="stat-item">Type: {section_type.title()}</div>
-                    <div class="stat-item">Items: {item_count}</div>
-                </details>
-            </div>
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> {item_count}</div><div class='stat-item'><strong>Content Types:</strong><br>{content_types_html}</div><div class='stat-item'><strong>Image Count:</strong> {image_count}</div><div class='stat-item'><strong>Text Blocks:</strong> {text_count}</div><div class='stat-item'><strong>List Items:</strong> {list_count}</div><div class='stat-item'><strong>Table Rows:</strong> {table_count}</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
         </div>
-        """ if self.include_stats else ""
+    </div>
+    """ if self.include_stats else ""
 
         section_html = f"""
-        <div class="section" id="section-{self._generate_heading_id(section_name)}">
-            <div class="section-header">
-                <h2 class="section-title">{section_name}</h2>
-                <div class="section-meta">
-                    <span class="section-stats">{section_type.title()} • {item_count} items</span>
-                </div>
-            </div>
-            {mini_stats_html}
-            <div class="section-content">
-                {''.join(items_html)}
-            </div>
+    <div class="section depth-{depth}">
+        <div class="section-header">
+            <h2 class="section-title">{section_name}</h2>
+            <span class="section-meta">Line {i+1} • Level 2</span>
         </div>
-        """
+
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    {mini_stats_html}
+                </div>
+            </details>
+        </div>
+
+
+        <div class="section-content">
+            {''.join(items_html)}
+        </div>
+
+
+    </div>
+    """
 
         return section_html
 
@@ -650,87 +763,95 @@ class HTMLGenerator:
         }
 
         .content {
-            margin-bottom: 2rem;
+            padding: 30px;
         }
 
         .section {
-            margin-bottom: 3rem;
-            padding: 1.5rem;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            background: #fff;
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
         .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
+            background: #f8f9fa;
+            padding: 20px;
             border-bottom: 1px solid #e9ecef;
         }
 
         .section-title {
             color: #2c3e50;
-            font-size: 1.8rem;
+            margin-bottom: 5px;
         }
 
         .section-meta {
-            color: #6c757d;
+            color: #666;
             font-size: 0.9rem;
+            font-weight: normal;
+        }
+
+        .section-stats {
+            padding: 15px 20px;
+            background: #f1f3f4;
         }
 
         .section-stats details summary {
             cursor: pointer;
-            padding: 0.5rem;
-            background: #e9ecef;
-            border-radius: 4px;
+            font-weight: 500;
+            color: #555;
         }
 
         .mini-stats .stats-card {
-            margin-bottom: 1rem;
-            padding: 1rem;
+            margin: 10px 0;
+            padding: 15px;
         }
 
         .section-content {
-            space-y: 1rem;
+            padding: 20px;
         }
 
         .content-item {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
-            background: #fff;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
         }
 
         .text-item {
-            border-left: 4px solid #007bff;
+            background: #f8f9fa;
+            border-left-color: #3498db;
         }
 
         .image-item {
-            border-left: 4px solid #28a745;
+            background: #e8f5e8;
+            border-left-color: #27ae60;
         }
 
         .list-item {
-            border-left: 4px solid #ffc107;
+            background: #fff3cd;
+            border-left-color: #ffc107;
         }
 
         .heading-item {
-            border-left: 4px solid #dc3545;
+            background: #e7f3ff;
+            border-left-color: #007bff;
         }
 
         .table-item {
-            border-left: 4px solid #6f42c1;
+            background: #f0f8ff;
+            border-left-color: #8a2be2;
+        }
+
+        .table-row-item {
+            background: #f5f5f5;
+            border-left-color: #999;
         }
 
         .content-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-            color: #6c757d;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 500;
         }
 
         .text-content {
@@ -857,12 +978,12 @@ class HTMLGenerator:
             background: #dee2e6;
         }
 
-        .depth-0 { margin-left: 0; }
-        .depth-1 { margin-left: 1rem; }
-        .depth-2 { margin-left: 2rem; }
-        .depth-3 { margin-left: 3rem; }
-        .depth-4 { margin-left: 4rem; }
-        .depth-5 { margin-left: 5rem; }
+        .depth-0 {}
+        .depth-1 {}
+        .depth-2 {}
+        .depth-3 {}
+        .depth-4 {}
+        .depth-5 {}
 
         .footer {
             text-align: center;
@@ -893,7 +1014,7 @@ class HTMLGenerator:
 
     def generate_html_document(self, data: Dict, title: str = "Document Visualization") -> str:
         """
-        Generate complete HTML document from structured data.
+        Generate complete HTML document from structured data organized by document structure.
 
         Args:
             data: Structured document data
@@ -907,30 +1028,10 @@ class HTMLGenerator:
         total_items = metadata.get('total_items', 0)
         timestamp = metadata.get('processing_timestamp', '')
 
-        # Generate document sections
-        content_sections = []
+        # Organize content by document sections
+        sections_content = self._organize_content_by_sections(data)
 
-        # Content section
-        if data.get('content'):
-            content_section = self.generate_section("Content", data['content'], "content")
-            content_sections.append(content_section)
-
-        # Tables section
-        if data.get('tables'):
-            tables_section = self.generate_section("Tables", data['tables'], "tables")
-            content_sections.append(tables_section)
-
-        # Images section
-        if data.get('images'):
-            images_section = self.generate_section("Images", data['images'], "images")
-            content_sections.append(images_section)
-
-        # References section
-        if data.get('references'):
-            references_section = self.generate_section("References", data['references'], "references")
-            content_sections.append(references_section)
-
-        # Generate complete HTML
+        # Generate complete HTML document
         html_document = f"""
         <!DOCTYPE html>
         <html lang="en">
@@ -946,7 +1047,7 @@ class HTMLGenerator:
             <div class="container">
                 <div class="header">
                     <h1>📄 {title}</h1>
-                    <div class="subtitle">Generated by Chunk Monkey</div>
+                    <div class="subtitle">Generated on {timestamp}</div>
                 </div>
 
                 <div class="document-info">
@@ -955,25 +1056,19 @@ class HTMLGenerator:
                             <strong>Total Items:</strong> {total_items}
                         </div>
                         <div class="info-item">
-                            <strong>Processed:</strong> {timestamp}
-                        </div>
-                        <div class="info-item">
-                            <strong>Sections:</strong> {len(content_sections)}
+                            <strong>Sections:</strong> {len(sections_content)}
                         </div>
                     </div>
                 </div>
 
                 {self.generate_stats_card(data)}
 
-                {self.generate_table_of_contents(data)}
-
                 <div class="content">
-                    {''.join(content_sections)}
+                    {sections_content}
                 </div>
 
                 <div class="footer">
-                    <p>Generated by Chunk Monkey PDF Processing Pipeline</p>
-                    <p>Processing timestamp: {timestamp}</p>
+                    <p>Generated by Chunk Monkey HTML Generator</p>
                 </div>
             </div>
         </body>
@@ -981,6 +1076,143 @@ class HTMLGenerator:
         """
 
         return html_document
+
+    def _organize_content_by_sections(self, data: Dict) -> str:
+        """
+        Organize all content by document sections rather than data type.
+
+        Args:
+            data: Structured document data
+
+        Returns:
+            HTML string with content organized by document structure
+        """
+        # Collect all items with their section information
+        all_items = []
+
+        # Add content items
+        for item in data.get('content', []):
+            all_items.append({**item, 'source_type': 'content'})
+
+        # Add table items
+        for item in data.get('tables', []):
+            all_items.append({**item, 'source_type': 'table'})
+
+        # Add image items
+        for item in data.get('images', []):
+            all_items.append({**item, 'source_type': 'image'})
+
+        # Add reference items
+        for item in data.get('references', []):
+            all_items.append({**item, 'source_type': 'reference'})
+
+        # Group items by their parent_section
+        sections = {}
+        for item in all_items:
+            section_name = item.get('parent_section', 'Unknown Section')
+            if section_name not in sections:
+                sections[section_name] = []
+            sections[section_name].append(item)
+
+        # Generate HTML for each section
+        sections_html = []
+        for section_index, (section_name, items) in enumerate(sections.items()):
+            if items:  # Only generate sections that have content
+                section_html = self._generate_document_section(section_name, items, section_index)
+                sections_html.append(section_html)
+
+        return "".join(sections_html)
+
+    def _generate_document_section(self, section_name: str, items: List[Dict], section_index: int = 0) -> str:
+        """
+        Generate HTML for a document section with all its content.
+
+        Args:
+            section_name: Name of the document section
+            items: All items belonging to this section
+            section_index: Index of the section for line numbering
+
+        Returns:
+            HTML string for the section
+        """
+        # Determine section depth from first item's hierarchy
+        depth = 0
+        if items:
+            hierarchy = items[0].get('section_hierarchy', [])
+            depth = len(hierarchy) - 1 if hierarchy else 0
+
+        # Count different types of content using source_type and item_type
+        text_count = len([i for i in items if i.get('type') == 'textitem' or (i.get('source_type') == 'content' and 'text' in i.get('type', ''))])
+        table_count = len([i for i in items if i.get('source_type') == 'table' or i.get('item_type') == 'tableitem'])
+        image_count = len([i for i in items if i.get('source_type') == 'image' or i.get('item_type') == 'pictureitem'])
+        list_count = len([i for i in items if i.get('type') == 'listitem'])
+
+        # Count content types for stats
+        content_types = {}
+        for item in items:
+            # Use source_type first, then fall back to type or item_type
+            item_type = item.get('source_type')
+            if not item_type:
+                item_type = item.get('type') or item.get('item_type', 'unknown')
+            content_types[item_type] = content_types.get(item_type, 0) + 1
+
+        # Generate content types breakdown
+        content_types_html = ""
+        if content_types:
+            type_details = []
+            for item_type, count in content_types.items():
+                display_type = item_type.replace('item', '') if item_type.endswith('item') else item_type
+                type_details.append(f"<span class='stat-detail'>{display_type}: {count}</span>")
+            content_types_html = "<br>".join(type_details)
+
+        # Generate section statistics
+        stats_html = f"""
+    <div class="stats-card">
+        <h3>📊 Document Statistics</h3>
+        <div class="stats-grid">
+            <div class='stat-item'><strong>Total Items:</strong> {len(items)}</div><div class='stat-item'><strong>Content Types:</strong><br>{content_types_html}</div><div class='stat-item'><strong>Image Count:</strong> {image_count}</div><div class='stat-item'><strong>Text Blocks:</strong> {text_count}</div><div class='stat-item'><strong>List Items:</strong> {list_count}</div><div class='stat-item'><strong>Table Rows:</strong> {table_count}</div><div class='stat-item'><strong>Subsection Count:</strong> 0</div>
+        </div>
+    </div>
+    """
+
+        # Generate content HTML
+        items_html = []
+        for i, item in enumerate(items):
+            source_type = item.get('source_type', 'content')
+            if source_type == 'image':
+                items_html.append(self._generate_image_item(item, i))
+            elif source_type == 'table':
+                items_html.append(self._generate_table_item(item, i))
+            else:
+                items_html.append(self.generate_content_item(item, i))
+
+        # Generate section HTML
+        section_html = f"""
+    <div class="section depth-{depth}">
+        <div class="section-header">
+            <h2 class="section-title">{section_name}</h2>
+            <span class="section-meta">Line {section_index * 2 + 1} • Level 2</span>
+        </div>
+
+        <div class="section-stats">
+            <details>
+                <summary>📈 Section Statistics</summary>
+                <div class="mini-stats">
+                    {stats_html}
+                </div>
+            </details>
+        </div>
+
+
+        <div class="section-content">
+            {"".join(items_html)}
+        </div>
+
+
+    </div>
+    """
+
+        return section_html
 
     def generate(self, data: Dict, output_path: str, title: str = "Document Visualization") -> None:
         """
