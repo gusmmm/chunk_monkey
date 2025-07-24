@@ -64,13 +64,17 @@ class ChunkMonkey:
         if not pdf_path.exists():
             raise FileNotFoundError(f"PDF file not found: {pdf_path}")
 
+        # Create subfolder for this PDF
+        pdf_subfolder = self.output_dir / pdf_path.stem
+        pdf_subfolder.mkdir(exist_ok=True)
+
         # Enhanced PDF processing with images and markdown
-        doc, output_path = self.pdf_processor.process_pdf_with_images(str(pdf_path), str(self.output_dir))
+        doc, output_path = self.pdf_processor.process_pdf_with_images(str(pdf_path), str(pdf_subfolder))
         structured_data = self.pdf_processor.extract_structured_data(doc)
 
         # Save JSON
         json_filename = f"{pdf_path.stem}_structured.json"
-        json_path = self.output_dir / json_filename
+        json_path = pdf_subfolder / json_filename
 
         self.file_manager.write_json_file(json_path, structured_data)
         self.logger.info(f"JSON saved: {json_path}")
@@ -91,9 +95,9 @@ class ChunkMonkey:
         # Generate HTML
         html_content = self.html_generator.generate_html_document(structured_data)
 
-        # Save HTML
+        # Save HTML in the same directory as the JSON file (PDF subfolder)
         html_filename = f"{json_path.stem.replace('_structured', '')}_output.html"
-        html_path = self.output_dir / html_filename
+        html_path = json_path.parent / html_filename
 
         self.file_manager.write_text_file(html_path, html_content)
         self.logger.info(f"HTML saved: {html_path}")
@@ -107,8 +111,12 @@ class ChunkMonkey:
         if not pdf_path.exists():
             raise FileNotFoundError(f"PDF file not found: {pdf_path}")
 
+        # Create subfolder for this PDF
+        pdf_subfolder = self.output_dir / pdf_path.stem
+        pdf_subfolder.mkdir(exist_ok=True)
+
         # Complete pipeline with images, markdown, and structured data
-        results = self.pdf_processor.process_complete_pipeline(str(pdf_path), str(self.output_dir))
+        results = self.pdf_processor.process_complete_pipeline(str(pdf_path), str(pdf_subfolder))
 
         json_path = Path(results['json_structured'])
 
@@ -139,7 +147,8 @@ class ChunkMonkey:
         for pdf_file in pdf_files:
             try:
                 self.logger.info(f"Processing: {pdf_file.name}")
-                self.process_full_pipeline(pdf_file)
+                json_path, html_path = self.process_full_pipeline(pdf_file)
+                self.logger.info(f"Successfully processed {pdf_file.name} -> {json_path.parent}")
             except Exception as e:
                 self.logger.error(f"Failed to process {pdf_file.name}: {e}")
                 continue
